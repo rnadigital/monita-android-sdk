@@ -9,7 +9,7 @@ object OkHttpClientProvider {
         client = okHttpClient
     }
 
-    fun getClient(): OkHttpClient? {
-        return client
+    fun getClient(): OkHttpClient {
+        return client ?: throw IllegalStateException("OkHttpClient not initialized")
     }
 }

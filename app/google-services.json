@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "630882898833",
+    "firebase_url": "https://authentication-5c281.firebaseio.com",
+    "project_id": "authentication-5c281",
+    "storage_bucket": "authentication-5c281.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:630882898833:android:d205e23998f87915e40030",
+        "android_client_info": {
+          "package_name": "com.rnadigital.monita_android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "630882898833-dts2iqdj0bjmiah738hcup4ehadp81fd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBchClLtu-BC468s62zswOWZKitmns5o1M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "630882898833-dts2iqdj0bjmiah738hcup4ehadp81fd.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "630882898833-1co15nqq4jvsj4ca4ohd0rli5undk4no.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.authentication.app"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

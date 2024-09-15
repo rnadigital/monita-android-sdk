@@ -37,10 +37,16 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
+    implementation(libs.play.services.measurement.api)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
     implementation (libs.okhttp) // or latest version
+    implementation (libs.gson) // Use the latest version if available
+
+//    implementation (libs.firebase.analytics.ktx)
+
+
 
 }
