@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:630882898833:android:d205e23998f87915e40030",
         "android_client_info": {
-          "package_name": "com.rnadigital.monita_android"
+          "package_name": "digital.rna.monita_android"
         }
       },
       "oauth_client": [

@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.rnadigital.monita_android_sdk"
+    namespace = "digital.rna.monita_android_sdk"
     compileSdk = 34
 
     defaultConfig {
