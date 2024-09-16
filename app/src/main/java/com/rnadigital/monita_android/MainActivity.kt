@@ -34,7 +34,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        com.rnadigital.monita_android_sdk.SDKInitializer.init ("token"){}
+        com.rnadigital.monita_android_sdk.SDKInitializer.init (token){}
 
         setContent {
             Monita_androidTheme {
