@@ -16,9 +16,11 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven { url = uri("https://jitpack.io")  }
+
     }
 }
 
 rootProject.name = "Monita_android"
 include(":app")
-include(":monita-android-sdk")
+//include(":monita-android-sdk")

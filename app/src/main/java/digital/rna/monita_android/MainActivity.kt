@@ -10,8 +10,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.rnadigital.monita_android_sdk.OkHttpClientProvider
+import com.rnadigital.monita_android_sdk.SDKInitializer
 import digital.rna.monita_android.ui.theme.Monita_androidTheme
-import digital.rna.monita_android_sdk.OkHttpClientProvider
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -28,7 +29,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        digital.rna.monita_android_sdk.SDKInitializer.init(token, {})
+        SDKInitializer.init( {})
 
         setContent {
             Monita_androidTheme {
