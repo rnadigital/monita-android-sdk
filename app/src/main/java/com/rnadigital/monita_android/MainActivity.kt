@@ -16,6 +16,7 @@ import com.rnadigital.monita_android.ui.theme.Monita_androidTheme
 import com.rnadigital.monita_android_sdk.Logger
 import com.rnadigital.monita_android_sdk.NetworkInterceptor
 import com.rnadigital.monita_android_sdk.OkHttpClientProvider
+import com.rnadigital.monita_android_sdk.SDKInitializer
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -34,7 +35,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        com.rnadigital.monita_android_sdk.SDKInitializer.init (token){}
+        SDKInitializer.init (token){}
 
         setContent {
             Monita_androidTheme {
