@@ -27,13 +27,14 @@ import okio.IOException
 
 class MainActivity : ComponentActivity() {
 
+    val token = "fe041147-0600-48ad-a04e-d3265becc4eb"
     val JSON = "application/json; charset=utf-8".toMediaTypeOrNull()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        com.rnadigital.monita_android_sdk.SDKInitializer.init {}
+        com.rnadigital.monita_android_sdk.SDKInitializer.init ("token"){}
 
         setContent {
             Monita_androidTheme {

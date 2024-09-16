@@ -15,14 +15,14 @@ object SDKInitializer {
     private var isInitialized = false
 
 
-    fun init( onInitialized: (() -> Unit)? = null) {
+    fun init(token: String,  onInitialized: (() -> Unit)? = null) {
         if (isInitialized) {
             onInitialized?.invoke() // Already initialized, notify immediately
             return
         }
 
         // Fetch the monitoring configuration from the API
-        fetchMonitoringConfig { monitoringConfig ->
+        fetchMonitoringConfig (token) { monitoringConfig ->
             // Set up OkHttpClient with the interceptor and monitoring config
             val client = OkHttpClient.Builder()
                 .addInterceptor(NetworkInterceptor(Logger(), monitoringConfig))
@@ -61,9 +61,9 @@ object SDKInitializer {
 //    }
 
 
-    private fun fetchMonitoringConfig(callback: (MonitoringConfig) -> Unit) {
+    private fun fetchMonitoringConfig(token: String, callback: (MonitoringConfig) -> Unit) {
         val request = Request.Builder()
-            .url("https://storage.googleapis.com/cdn-monita-dev/custom-config/fe041147-0600-48ad-a04e-d3265becc4eb.json")
+            .url("https://storage.googleapis.com/cdn-monita-dev/custom-config/$token.json")
             .build()
 
         val client = OkHttpClient()
