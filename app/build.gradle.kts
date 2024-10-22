@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.google.gms.google.services)
     alias(libs.plugins.google.firebase.crashlytics)
+    id("net.bytebuddy.byte-buddy-gradle-plugin") version "1.15.5" // Use the latest version
+
 }
 
 android {
@@ -62,6 +64,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(project(":monita-android-sdk"))
+
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.crashlytics)
     testImplementation(libs.junit)
@@ -72,11 +75,33 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    implementation (libs.okhttp.v493)
+    implementation (libs.okhttp)
 
     implementation (libs.material3)
+    implementation (libs.byte.buddy.android)
+
+
+    byteBuddy (project(":monita-adapter-library"))
+    implementation(project(":monita-adapter-library"))
+
+//    kapt(libs.byte.buddy.android)
+
+//    implementation (libs.facebook.android.sdk)
+//    implementation (libs.facebook.core)
+
+    implementation (libs.facebook.marketing) // Use version range as per your needs
+
+
+
 
 //    implementation (libs.monita.android.sdk)
 
 
 }
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+

@@ -3,6 +3,7 @@ package com.rnadigital.monita_android_sdk.sendData
 import android.util.Log
 import com.google.gson.Gson
 import com.rnadigital.monita_android_sdk.Logger
+import com.rnadigital.monita_android_sdk.MonitaSDK
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -15,30 +16,31 @@ import java.io.IOException
 class ApiService {
 
 
-    // JSON Media Type
-    private val JSON = "application/json; charset=utf-8".toMediaTypeOrNull()
-    private val client = OkHttpClient()
-
+    companion object {
+        // JSON Media Type
+        private val JSON = "application/json; charset=utf-8".toMediaTypeOrNull()
+        // Shared OkHttpClient instance for better performance and connection reuse
+        private val client = HttpClient.client
+    }
     // Function to send POST request with dynamic data
     fun postData(
-        token: String,               // User-provided token
-        sdkVersion: String,          // SDK version
-        appVersion: String,          // App version
+        sdkVersion: String = "1.0",          // SDK version
+        appVersion: String = "1.0",          // App version
         vendorEvent: String,         // Vendor event
         vendorName: String,          // Vendor name (case-sensitive)
         httpMethod: String,          // HTTP method (POST)
         capturedUrl: String,         // Captured HTTP endpoint URL
-        appId: String,               // App ID
-        sessionId: String,           // Session ID
-        consentString: String,       // Consent string value
-        hostAppVersion: String,      // Host app version
+        appId: String = "com.rnadigital.monita_android",               // App ID
+        sessionId: String ="",           // Session ID
+        consentString: String = "GRANTED",       // Consent string value
+        hostAppVersion: String = "com.rnadigital.monita_android",      // Host app version
         dtData: List<Map<String, Any>>         // Dynamic payload content
     ) {
         val url = "https://dev-stream.getmonita.io/api/v1/"
 
         // Create the payload with dynamic data
         val payload = RequestPayload(
-            t = token,
+            t = MonitaSDK.token,
             dm = "app", // Deployment method (app for SDK based deployments)
             mv = sdkVersion,
             sv = appVersion,
@@ -82,11 +84,18 @@ class ApiService {
 
                     Log.d("SDKLogger", "Successfully posted data to Monita") // This is an example using Android's Logcat
 
-                    println("Successfully posted data to Monita!")
+                    println("intercepted : Successfully posted data to Monita!")
                 } else {
                     println("Failed to post data: ${response.message}")
                 }
             }
         })
+    }
+}
+
+
+object HttpClient {
+    val client: OkHttpClient by lazy {
+        OkHttpClient.Builder().build()
     }
 }

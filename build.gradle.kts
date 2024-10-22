@@ -5,4 +5,18 @@ plugins {
     alias(libs.plugins.android.library) apply false
     alias(libs.plugins.google.gms.google.services) apply false
     alias(libs.plugins.google.firebase.crashlytics) apply false
+
+
 }
+
+//buildscript {
+//    repositories {
+//        google()
+//        mavenCentral()
+//    }
+//    dependencies {
+//        classpath (libs.gradle)
+//        classpath (libs.byte.buddy.gradle.plugin)
+//
+//    }
+//}
