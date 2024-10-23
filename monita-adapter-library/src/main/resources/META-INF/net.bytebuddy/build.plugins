@@ -1,3 +1,4 @@
 com.example.monita_adapter_library.OkHttpInstrumentationPlugin
 com.example.monita_adapter_library.firebase_analytics.FirebaseAnalyticsInstrumentationPlugin
 com.example.monita_adapter_library.facebookLogs.FacebookEventLoggerInstrumentationPlugin
+com.example.monita_adapter_library.googleAds.GoogleAdsInstrumentationPlugin

@@ -79,17 +79,11 @@ dependencies {
 
     implementation (libs.material3)
     implementation (libs.byte.buddy.android)
-
+    implementation (libs.play.services.ads)
 
     byteBuddy (project(":monita-adapter-library"))
     implementation(project(":monita-adapter-library"))
-
-//    kapt(libs.byte.buddy.android)
-
-//    implementation (libs.facebook.android.sdk)
-//    implementation (libs.facebook.core)
-
-    implementation (libs.facebook.marketing) // Use version range as per your needs
+    implementation (libs.facebook.marketing)
 
 
 

@@ -9,6 +9,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import com.facebook.appevents.AppEventsConstants
 import com.facebook.appevents.AppEventsLogger
+import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.admanager.AdManagerAdRequest
+import com.google.android.gms.ads.admanager.AdManagerInterstitialAd
+import com.google.android.gms.ads.admanager.AdManagerInterstitialAdLoadCallback
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.rnadigital.monita_android.ui.theme.Monita_androidTheme
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -19,6 +24,8 @@ class MainActivity : ComponentActivity() {
 
     private val token = "fe041147-0600-48ad-a04e-d3265becc4eb"
     private val JSON = "application/json; charset=utf-8".toMediaTypeOrNull()
+    private var interstitialAd: AdManagerInterstitialAd? = null
+
 
     // Firebase Analytics instance
     private lateinit var firebaseAnalytics: FirebaseAnalytics
@@ -38,6 +45,8 @@ class MainActivity : ComponentActivity() {
         logCustomEventFB()
         setUserProperty()
         logFirebaseEvent(firebaseAnalytics)
+        MobileAds.initialize(this) {}
+
 
         // Set up Compose UI
         setContent {
@@ -86,4 +95,29 @@ class MainActivity : ComponentActivity() {
         // Log the event with Firebase
         fa.logEvent("TestEvent", bundle)
     }
+
+    private fun loadAd() {
+        val adRequest = AdManagerAdRequest.Builder().build()
+
+        AdManagerInterstitialAd.load(
+            this,
+            "YOUR_AD_UNIT_ID",
+            adRequest,
+            object : AdManagerInterstitialAdLoadCallback() {
+                override fun onAdLoaded(ad: AdManagerInterstitialAd) {
+                    interstitialAd = ad
+                    println("Interstitial ad loaded.")
+                }
+
+                override fun onAdFailedToLoad(loadAdError: LoadAdError) {
+                    println("Failed to load interstitial ad: ${loadAdError.message}")
+                }
+            }
+        )
+    }
+
+    private fun showAd() {
+        interstitialAd?.show(this)
+    }
 }
+
