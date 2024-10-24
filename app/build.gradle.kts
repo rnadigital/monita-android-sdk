@@ -84,6 +84,9 @@ dependencies {
     byteBuddy (project(":monita-adapter-library"))
     implementation(project(":monita-adapter-library"))
     implementation (libs.facebook.marketing)
+//    implementation (libs.play.services.ads.v2250)
+    implementation (libs.play.services.ads.lite)
+
 
 
 
