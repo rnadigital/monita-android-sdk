@@ -46,6 +46,8 @@ dependencies {
     implementation(libs.okhttp)
     implementation (libs.facebook.marketing)
     implementation (libs.play.services.ads)
+    implementation (libs.core)
+    implementation (libs.marketing)
     implementation(project(":monita-android-sdk"))
 
 }

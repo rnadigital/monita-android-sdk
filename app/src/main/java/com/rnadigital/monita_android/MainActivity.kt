@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
+import com.adobe.marketing.mobile.MobileCore
 import com.facebook.appevents.AppEventsConstants
 import com.facebook.appevents.AppEventsLogger
 import com.google.android.gms.ads.LoadAdError
@@ -119,5 +120,19 @@ class MainActivity : ComponentActivity() {
     private fun showAd() {
         interstitialAd?.show(this)
     }
+
+    fun testAdobeAnalytics() {
+        val contextData = mapOf(
+            "pageName" to "HomeScreen",
+            "screenOrientation" to "portrait"
+        )
+
+        // Call the trackState method, which should be intercepted
+        MobileCore.trackState("HomeScreen", contextData)
+
+        // Call the trackAction method, which should be intercepted
+        MobileCore.trackAction("ButtonClicked", mapOf("button_name" to "SubscribeButton"))
+    }
+
 }
 

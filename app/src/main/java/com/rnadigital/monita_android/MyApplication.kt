@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
 import android.util.Log
+import com.adobe.marketing.mobile.Analytics
+import com.adobe.marketing.mobile.MobileCore
 import com.facebook.FacebookSdk
 import com.facebook.appevents.AppEventsLogger
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -45,9 +47,23 @@ class MyApplication : Application() {
         AppEventsLogger.activateApp(this)
 
 
+        // Initialize the Adobe Experience Platform SDK
+        MobileCore.setApplication(this)
+        MobileCore.configureWithAppID("YOUR_APP_ID_FROM_LAUNCH")
 
-
+        try {
+            Analytics.registerExtension()
+            MobileCore.start {
+                Log.d("AdobeAnalytics", "Adobe Experience Platform SDK initialized.")
+            }
+        } catch (e: Exception) {
+            Log.e("AdobeAnalytics", "Error initializing Adobe SDK: ${e.message}")
+        }
     }
+
+
+
+    
 }
 
 
