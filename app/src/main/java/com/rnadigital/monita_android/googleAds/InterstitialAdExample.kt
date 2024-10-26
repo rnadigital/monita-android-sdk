@@ -43,19 +43,19 @@ fun InterstitialAdExample() {
 
 private fun loadInterstitialAd(context: Context, isAdLoading: Boolean, onAdLoaded: (InterstitialAd) -> Unit) {
     if (!isAdLoading) {
-        isAdLoading = true
+//        isAdLoading = true
         InterstitialAd.load(
             context,
             "YOUR_INTERSTITIAL_AD_UNIT_ID",
             AdRequest.Builder().build(),
             object : InterstitialAdLoadCallback() {
                 override fun onAdLoaded(ad: InterstitialAd) {
-                    isAdLoading = false
+//                    isAdLoading = false
                     onAdLoaded(ad)
                 }
 
                 override fun onAdFailedToLoad(error: LoadAdError) {
-                    isAdLoading = false
+//                    isAdLoading = false
                     Log.e("InterstitialAd", "Failed to load ad: ${error.message}")
                 }
             }

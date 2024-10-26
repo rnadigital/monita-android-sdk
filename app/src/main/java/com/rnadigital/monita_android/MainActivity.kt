@@ -47,7 +47,7 @@ class MainActivity : ComponentActivity() {
         setUserProperty()
         logFirebaseEvent(firebaseAnalytics)
         MobileAds.initialize(this) {}
-
+        testAdobeAnalytics()
 
         // Set up Compose UI
         setContent {

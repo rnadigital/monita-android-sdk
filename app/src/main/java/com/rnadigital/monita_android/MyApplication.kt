@@ -1,35 +1,17 @@
 package com.rnadigital.monita_android
 
 import android.app.Application
-import android.content.Context
-import android.os.Bundle
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
 import android.util.Log
 import com.adobe.marketing.mobile.Analytics
+import com.adobe.marketing.mobile.Extension
+import com.adobe.marketing.mobile.LoggingMode
 import com.adobe.marketing.mobile.MobileCore
 import com.facebook.FacebookSdk
 import com.facebook.appevents.AppEventsLogger
-import com.google.firebase.analytics.FirebaseAnalytics
-import com.rnadigital.monita_android.firebase.FirebaseLogs
-import com.rnadigital.monita_android_sdk.Logger
 import com.rnadigital.monita_android_sdk.MonitaSDK
-import net.bytebuddy.ByteBuddy
-import net.bytebuddy.android.AndroidClassLoadingStrategy
-import net.bytebuddy.asm.Advice
-import net.bytebuddy.dynamic.ClassFileLocator
-import net.bytebuddy.dynamic.loading.ClassLoadingStrategy
-import net.bytebuddy.dynamic.scaffold.TypeValidation
-import net.bytebuddy.implementation.MethodDelegation
-import net.bytebuddy.matcher.ElementMatchers
-import net.bytebuddy.pool.TypePool
-import okhttp3.Call
-import okhttp3.Callback
-import okhttp3.Interceptor
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.Response
-import okio.IOException
+
 
 
 class MyApplication : Application() {
@@ -47,23 +29,17 @@ class MyApplication : Application() {
         AppEventsLogger.activateApp(this)
 
 
-        // Initialize the Adobe Experience Platform SDK
+        // Initialize Adobe Mobile SDK Core
         MobileCore.setApplication(this)
-        MobileCore.configureWithAppID("YOUR_APP_ID_FROM_LAUNCH")
+        MobileCore.setLogLevel(LoggingMode.DEBUG)
 
+        // Register Adobe extensions
         try {
-            Analytics.registerExtension()
-            MobileCore.start {
-                Log.d("AdobeAnalytics", "Adobe Experience Platform SDK initialized.")
+            MobileCore.registerExtensions(listOf(Analytics::class.java as Class<out Extension>)) {
+            println("Adobe Analytics extension registered successfully.")
             }
         } catch (e: Exception) {
-            Log.e("AdobeAnalytics", "Error initializing Adobe SDK: ${e.message}")
+            println("Error registering Adobe Analytics extension: ${e.message}")
         }
     }
-
-
-
-    
 }
-
-

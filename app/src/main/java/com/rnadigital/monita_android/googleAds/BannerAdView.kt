@@ -18,7 +18,7 @@ fun BannerAdView(modifier: Modifier = Modifier) {
     val context = LocalContext.current
     val adView = remember {
         AdView(context).apply {
-            adSize = AdSize.BANNER
+//            adSize = AdSize.BANNER
             adUnitId = "YOUR_BANNER_AD_UNIT_ID"
             loadAd(AdRequest.Builder().build())
             adListener = object : AdListener() {

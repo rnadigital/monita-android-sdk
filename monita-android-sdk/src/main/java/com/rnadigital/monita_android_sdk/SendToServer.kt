@@ -5,6 +5,7 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.rnadigital.monita_android_sdk.MonitaSDK.monitoringConfig
+import com.rnadigital.monita_android_sdk.monitoringConfig.FilterValidator
 import com.rnadigital.monita_android_sdk.monitoringConfig.Vendor
 import com.rnadigital.monita_android_sdk.sendData.ApiService
 import com.rnadigital.monita_android_sdk.utils.JSONUtils.createPayload
@@ -84,6 +85,87 @@ class SendToServer(
         return gson.fromJson(requestBodyString, jsonMapType)
     }
 
+    fun createAdobeAnalyticsMonitaData( name: String, params: Bundle) {
+
+        val url = "googleadservices.com/pagead/conversion"
+
+
+        val vendor = vendorUrlMatched(url)
+        if (vendorUrlMatched(url) != null) {
+
+//            val requestBodyMap: Map<String, Any> = getDtData(bundleToString(params))
+            val dtData = createPayloadAsListOfMaps(name, params)
+            val eventParameterValue =
+                vendor?.eventParamter?.let { findeventParameterValue(dtData, it) }
+
+
+
+            val payload = encodeJsonPayload(createPayload(name, params))
+            logger.log("vendors.eventParamter: ${vendor?.eventParamter}")
+            logger.log("vendors.vendorName: ${vendor?.vendorName}")
+            logger.log("request.method: pos")
+            logger.log("request.url: $url")
+            val isValid = vendor?.filters?.let { FilterValidator.validateFilters(dtData, it) }
+
+
+            if (isValid == true){
+                sendToMonita(
+                    vendorEvent = eventParameterValue ?: "",
+                    vendorName = vendor.vendorName ?: "",
+                    httpMethod = "Post",
+                    capturedUrl = url,
+                    dtData = dtData
+                )
+            }
+
+        }
+
+
+    }
+
+
+
+    fun createGoogleAdsMonitaData( name: String, params: Bundle) {
+
+        val url = "googleadservices.com/pagead/conversion"
+
+
+        val vendor = vendorUrlMatched(url)
+        if (vendorUrlMatched(url) != null) {
+
+//            val requestBodyMap: Map<String, Any> = getDtData(bundleToString(params))
+            val dtData = createPayloadAsListOfMaps(name, params)
+            val eventParameterValue =
+                vendor?.eventParamter?.let { findeventParameterValue(dtData, it) }
+
+
+
+            val payload = encodeJsonPayload(createPayload(name, params))
+            logger.log("vendors.eventParamter: ${vendor?.eventParamter}")
+            logger.log("vendors.vendorName: ${vendor?.vendorName}")
+            logger.log("request.method: pos")
+            logger.log("request.url: $url")
+            val isValid = vendor?.filters?.let { FilterValidator.validateFilters(dtData, it) }
+
+
+            if (isValid == true){
+                sendToMonita(
+                    vendorEvent = eventParameterValue ?: "",
+                    vendorName = vendor.vendorName ?: "",
+                    httpMethod = "Post",
+                    capturedUrl = url,
+                    dtData = dtData
+                )
+            }
+
+        }
+
+
+    }
+
+
+
+
     fun createFacebookMonitaData( name: String, params: Bundle) {
 
         val url = "facebook.com/tr/"
@@ -98,19 +180,25 @@ class SendToServer(
                 vendor?.eventParamter?.let { findeventParameterValue(dtData, it) }
 
 
+
             val payload = encodeJsonPayload(createPayload(name, params))
             logger.log("vendors.eventParamter: ${vendor?.eventParamter}")
             logger.log("vendors.vendorName: ${vendor?.vendorName}")
             logger.log("request.method: pos")
             logger.log("request.url: $url")
+            val isValid = vendor?.filters?.let { FilterValidator.validateFilters(dtData, it) }
 
-            sendToMonita(
-                vendorEvent = eventParameterValue ?: "",
-                vendorName = vendor?.vendorName ?: "",
-                httpMethod = "Post",
-                capturedUrl = url,
-                dtData = dtData
-            )
+
+            if (isValid == true){
+                sendToMonita(
+                    vendorEvent = eventParameterValue ?: "",
+                    vendorName = vendor.vendorName ?: "",
+                    httpMethod = "Post",
+                    capturedUrl = url,
+                    dtData = dtData
+                )
+            }
+
         }
 
 
@@ -136,13 +224,20 @@ class SendToServer(
             logger.log("request.method: pos")
             logger.log("request.url: $url")
 
-            sendToMonita(
-                vendorEvent = eventParameterValue ?: "",
-                vendorName = vendor?.vendorName ?: "",
-                httpMethod = "Post",
-                capturedUrl = url,
-                dtData = dtData
-            )
+            val isValid = vendor?.filters?.let { FilterValidator.validateFilters(dtData, it) }
+
+
+            if (isValid == true) {
+
+                sendToMonita(
+                    vendorEvent = eventParameterValue ?: "",
+                    vendorName = vendor.vendorName ?: "",
+                    httpMethod = "Post",
+                    capturedUrl = url,
+                    dtData = dtData
+                )
+
+            }
         }
 
 
@@ -168,14 +263,20 @@ class SendToServer(
             logger.log("vendors.vendorName: ${vendor?.vendorName}")
             logger.log("request.method: ${request.method}")
             logger.log("request.url: ${request.url}")
+            val isValid = vendor?.filters?.let { FilterValidator.validateFilters(dtData, it) }
 
-            sendToMonita(
-                vendorEvent = eventParameterValue ?: "",
-                vendorName = vendor?.vendorName ?: "",
-                httpMethod = request.method ?: "",
-                capturedUrl = request.url.toString(),
-                dtData = dtData
-            )
+
+            if (isValid == true) {
+
+                sendToMonita(
+                    vendorEvent = eventParameterValue ?: "",
+                    vendorName = vendor.vendorName ?: "",
+                    httpMethod = request.method ?: "",
+                    capturedUrl = request.url.toString(),
+                    dtData = dtData
+                )
+
+            }
 
 
         }

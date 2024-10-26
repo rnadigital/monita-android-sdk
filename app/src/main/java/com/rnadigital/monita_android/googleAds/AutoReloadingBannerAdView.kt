@@ -42,7 +42,7 @@ fun AutoReloadingBannerAdView(modifier: Modifier = Modifier) {
 
     adView = remember {
         AdView(context).apply {
-            adSize = AdSize.BANNER
+//           var adSize = AdSize.BANNER
             adUnitId = "YOUR_BANNER_AD_UNIT_ID"
             adListener = object : AdListener() {
                 override fun onAdLoaded() {

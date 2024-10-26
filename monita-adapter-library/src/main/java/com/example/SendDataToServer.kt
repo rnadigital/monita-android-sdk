@@ -37,5 +37,25 @@ class SendDataToServer {
     }
 
 
+    fun uploadGoogleAdsData( name: String, params: Bundle){
+        if (MonitaSDK.isInitialized) {
+            SendToServer().createGoogleAdsMonitaData(name , params)
+        } else {
+            println("MonitaSDK is not initialized. Unable to process the request.")
+
+        }
+    }
+
+
+    fun uploadAdobeAnalyticsData( name: String, params: Bundle){
+        if (MonitaSDK.isInitialized) {
+            SendToServer().createGoogleAdsMonitaData(name , params)
+        } else {
+            println("MonitaSDK is not initialized. Unable to process the request.")
+
+        }
+    }
+
+
 
 }

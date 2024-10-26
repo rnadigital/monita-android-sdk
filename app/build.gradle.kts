@@ -3,7 +3,8 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.google.gms.google.services)
     alias(libs.plugins.google.firebase.crashlytics)
-    id("net.bytebuddy.byte-buddy-gradle-plugin") version "1.15.5" // Use the latest version
+    id("net.bytebuddy.byte-buddy-gradle-plugin") version "1.15.5"
+    alias(libs.plugins.kotlin.compose) // Use the latest version
 
 }
 
@@ -34,11 +35,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
     buildFeatures {
         compose = true
@@ -84,16 +85,9 @@ dependencies {
     byteBuddy (project(":monita-adapter-library"))
     implementation(project(":monita-adapter-library"))
     implementation (libs.facebook.marketing)
-//    implementation (libs.play.services.ads.v2250)
-//    implementation (libs.play.services.ads.lite)
-    implementation (libs.core)
-    implementation (libs.marketing)
-
-
-
-
-
-
+    implementation(libs.sdk.bom)
+    implementation(libs.mobile.core)
+    implementation(libs.analytics)
 //    implementation (libs.monita.android.sdk)
 
 

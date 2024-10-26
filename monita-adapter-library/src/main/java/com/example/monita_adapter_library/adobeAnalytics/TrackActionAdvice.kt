@@ -2,6 +2,7 @@ package com.example.monita_adapter_library.adobeAnalytics
 
 import net.bytebuddy.asm.Advice
 import android.os.Bundle
+import com.example.SendDataToServer
 
 object TrackActionAdvice {
 
@@ -13,14 +14,33 @@ object TrackActionAdvice {
     ) {
         // Log the action being tracked
         println("Intercepted Adobe Analytics trackAction: action=$action")
-        println("Context data: ${contextData?.toString() ?: "No context data"}")
+        println("Intercepted Adobe Analytics Context data: ${contextData?.toString() ?: "No context data"}")
 
-        // Modify the context data if needed
-        if (contextData != null) {
-            // Example: Add a custom parameter
-            val mutableContextData = contextData.toMutableMap()
-            mutableContextData["user_id"] = "user123"
-            println("Modified context data: $mutableContextData")
+        // Convert contextData to Bundle
+        val dataBundle = Bundle().apply {
+            putString("action", action)
+            contextData?.forEach { (key, value) ->
+                when (value) {
+                    is String -> putString(key, value)
+                    is Int -> putInt(key, value)
+                    is Boolean -> putBoolean(key, value)
+                    is Float -> putFloat(key, value)
+                    is Double -> putDouble(key, value)
+                    is Long -> putLong(key, value)
+                    else -> putString(key, value.toString())
+                }
+            }
+
+            // Add a custom parameter, if needed
+            putString("user_id", "user123")
         }
+
+        // Log the modified context data for debugging
+        println("Modified context data in Bundle: $dataBundle")
+
+        // Send data to server
+        SendDataToServer().uploadAdobeAnalyticsData("track_action_event", dataBundle)
+
+
     }
 }
