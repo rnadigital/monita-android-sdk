@@ -49,7 +49,7 @@ class SendDataToServer {
 
     fun uploadAdobeAnalyticsData( name: String, params: Bundle){
         if (MonitaSDK.isInitialized) {
-            SendToServer().createGoogleAdsMonitaData(name , params)
+            SendToServer().createAdobeAnalyticsMonitaData(name , params)
         } else {
             println("MonitaSDK is not initialized. Unable to process the request.")
 

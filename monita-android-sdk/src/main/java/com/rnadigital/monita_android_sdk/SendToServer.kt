@@ -87,6 +87,9 @@ class SendToServer(
 
     fun createAdobeAnalyticsMonitaData( name: String, params: Bundle) {
 
+        println("Intercepted createAdobeAnalyticsMonitaData")
+
+
         val url = "googleadservices.com/pagead/conversion"
 
 
@@ -126,6 +129,9 @@ class SendToServer(
 
 
     fun createGoogleAdsMonitaData( name: String, params: Bundle) {
+
+        println("Intercepted createGoogleAdsMonitaData")
+
 
         val url = "googleadservices.com/pagead/conversion"
 
@@ -167,6 +173,8 @@ class SendToServer(
 
 
     fun createFacebookMonitaData( name: String, params: Bundle) {
+        println("Intercepted createGoogleAdsMonitaData")
+
 
         val url = "facebook.com/tr/"
 
@@ -206,6 +214,9 @@ class SendToServer(
 
     fun createFirebaseMonitaData(fa: FirebaseAnalytics, name: String, params: Bundle) {
 
+        println("Intercepted createFirebaseMonitaData")
+
+
         val url = "firebase.googleapis.com"
 
 
@@ -244,6 +255,10 @@ class SendToServer(
     }
 
     fun createHTTPMonitaData(request: Request) {
+
+        println("Intercepted createHTTPMonitaData")
+
+
         val url = request.url.toString()
 
         val vendor = vendorUrlMatched(url)

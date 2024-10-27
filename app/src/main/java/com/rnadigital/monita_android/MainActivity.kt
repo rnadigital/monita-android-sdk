@@ -17,8 +17,16 @@ import com.google.android.gms.ads.admanager.AdManagerInterstitialAd
 import com.google.android.gms.ads.admanager.AdManagerInterstitialAdLoadCallback
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.rnadigital.monita_android.ui.theme.Monita_androidTheme
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import okhttp3.Call
+import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
-
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
+import okio.IOException
 
 
 class MainActivity : ComponentActivity() {
@@ -43,19 +51,35 @@ class MainActivity : ComponentActivity() {
         logger = AppEventsLogger.newLogger(this)
 
         // Log custom events for Firebase and Facebook
-        logCustomEventFB()
-        setUserProperty()
-        logFirebaseEvent(firebaseAnalytics)
-        MobileAds.initialize(this) {}
-        testAdobeAnalytics()
+//        logCustomEventFB()
+//        setUserProperty()
+//        logFirebaseEvent(firebaseAnalytics)
+//        testAdobeAnalytics()
+
+        val backgroundScope = CoroutineScope(Dispatchers.IO)
+        backgroundScope.launch {
+            // Initialize the Google Mobile Ads SDK on a background thread.
+            MobileAds.initialize(this@MainActivity) {}
+            loadAd()
+        }
+
+
 
         // Set up Compose UI
         setContent {
-            Monita_androidTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    CustomizableBackpackScreen()
-                }
-            }
+//            Monita_androidTheme {
+//                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+//                    CustomizableBackpackScreen()
+//                }
+//            }
+
+            AnalyticsApp(
+                onFirebaseAnalyticsClick = { logFirebaseEvent(firebaseAnalytics) },
+                onFacebookAnalyticsClick = { logCustomEventFB() },
+                onAdobeAnalyticsClick = { testAdobeAnalytics() },
+                onGoogleAdsClick = { showAd() },
+                onApiCallClick = { performApiCall() }
+            )
         }
     }
 
@@ -102,7 +126,7 @@ class MainActivity : ComponentActivity() {
 
         AdManagerInterstitialAd.load(
             this,
-            "YOUR_AD_UNIT_ID",
+            "/21775744923/example/interstitial",
             adRequest,
             object : AdManagerInterstitialAdLoadCallback() {
                 override fun onAdLoaded(ad: AdManagerInterstitialAd) {
@@ -133,6 +157,27 @@ class MainActivity : ComponentActivity() {
         // Call the trackAction method, which should be intercepted
         MobileCore.trackAction("ButtonClicked", mapOf("button_name" to "SubscribeButton"))
     }
+
+
+    private fun performApiCall() {
+        val client = OkHttpClient()
+        val request = Request.Builder()
+            .url("https://jsonplaceholder.typicode.com/posts")
+            .build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                println("HTTP call failed: ${e.message}")
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                response.body?.string()?.let {
+                    println("HTTP call response: $it")
+                }
+            }
+        })
+    }
+
 
 }
 

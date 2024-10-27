@@ -11,7 +11,12 @@ object OHttpCallAdvice {
     @Advice.OnMethodEnter
     fun onEnter(@Advice.Argument(0) request: Request) {
         println("Intercepted OkHttpClient.newCall:request.url  ${request.url}")
-        println("Intercepted OkHttpClient.newCall: request.method ${request.method}")
+
+        val buf = okio.Buffer()
+        request.body?.writeTo(buf)
+//        Log.d("AppXMLPostReq", "reqBody = ${buf.readUtf8()}")
+
+        println("Intercepted OkHttpClient.newCall: request.body ${buf.readUtf8()}")
 
         SendDataToServer().uploadHttpData(request)
     }
