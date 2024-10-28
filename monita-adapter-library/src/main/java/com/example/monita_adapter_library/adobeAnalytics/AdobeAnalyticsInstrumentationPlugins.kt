@@ -1,6 +1,7 @@
 package com.example.monita_adapter_library.adobeAnalytics
 
 import com.adobe.marketing.mobile.Analytics
+import com.adobe.marketing.mobile.MobileCore
 import net.bytebuddy.build.Plugin
 import net.bytebuddy.description.type.TypeDescription
 import net.bytebuddy.dynamic.DynamicType
@@ -11,7 +12,7 @@ import net.bytebuddy.dynamic.ClassFileLocator
 class AdobeAnalyticsInstrumentationPlugin : Plugin {
 
     override fun matches(target: TypeDescription): Boolean {
-        return target.name == Analytics::class.java.name
+        return target.name == MobileCore::class.java.name
     }
 
     override fun apply(

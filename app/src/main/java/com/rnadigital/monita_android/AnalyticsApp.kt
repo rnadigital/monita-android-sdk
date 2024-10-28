@@ -13,7 +13,6 @@ import androidx.compose.ui.semantics.Role.Companion.Button
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-@Preview
 @Composable
 fun AnalyticsApp(
     onFirebaseAnalyticsClick: () -> Unit,

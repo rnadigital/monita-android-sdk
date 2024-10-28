@@ -50,18 +50,18 @@ suspend fun sendPurchaseEvent(context: Context) {
     try {
         val response = client.newCall(request).await()
         if (response.isSuccessful) {
-            println("Successfully sent the purchase event!")
+            println("Successfully sent the OKHttp purchase event!")
             withContext(Dispatchers.Main) {
                 Toast.makeText(context, "Purchase successful!", Toast.LENGTH_SHORT).show()
             }
         } else {
-            println("Failed to send the event: ${response.message}")
+            println("Failed to send the OKHttp event: ${response.message}")
             withContext(Dispatchers.Main) {
                 Toast.makeText(context, "Purchase failed: ${response.message}", Toast.LENGTH_SHORT).show()
             }
         }
     } catch (e: Exception) {
-        println("Error sending purchase event: ${e.message}")
+        println("Error sending purchase OKHttp event: ${e.message}")
         withContext(Dispatchers.Main) {
             Toast.makeText(context, "Network error: ${e.message}", Toast.LENGTH_SHORT).show()
         }

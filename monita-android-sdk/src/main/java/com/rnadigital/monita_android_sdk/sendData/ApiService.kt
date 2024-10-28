@@ -2,7 +2,6 @@ package com.rnadigital.monita_android_sdk.sendData
 
 import android.util.Log
 import com.google.gson.Gson
-import com.rnadigital.monita_android_sdk.Logger
 import com.rnadigital.monita_android_sdk.MonitaSDK
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
@@ -54,7 +53,7 @@ class ApiService {
             p = "",  // App area or null
             dt = dtData, // Dynamic payload data
             rl = sdkVersion, // SDK release version
-            doHost = hostAppVersion,
+            `do` = hostAppVersion,
             cn = consentString,
             sid = sessionId,
             cid = "" // Customer ID (null or SDK generated)
@@ -71,6 +70,7 @@ class ApiService {
         val request = Request.Builder()
             .url(url)
             .post(body)
+            .addHeader("Content-Type", "application/json; charset=utf-8")
             .build()
 
         // Make the API call
@@ -84,7 +84,7 @@ class ApiService {
 
                     Log.d("SDKLogger", "Successfully posted data to Monita") // This is an example using Android's Logcat
 
-                    println("intercepted : Successfully posted data to Monita!")
+                    println("intercepted : Successfully posted data to Monita! response.code ${response.code}")
                 } else {
                     println("Failed to post data: ${response.message}")
                 }

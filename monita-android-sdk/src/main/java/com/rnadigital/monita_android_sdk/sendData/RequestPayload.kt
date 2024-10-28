@@ -17,7 +17,7 @@ data class RequestPayload(
     val s: String = "android-sdk",  // System (android-sdk by default)
     val rl: String,            // SDK release version
     val env: String = "production", // Default environment (production)
-    val doHost: String,        // Host app version
+    val `do`: String,        // Host app version
     val et: Int = 0,           // Execution time in seconds (or 0)
     val vid: String = "1",     // Hard-coded "1"
     val cn: String,            // Consent string value

@@ -12,7 +12,7 @@ import okio.IOException
 object MonitaSDK {
     var isInitialized = false
     lateinit var monitoringConfig: MonitoringConfig
-    var token = ""
+    var token = "fe041147-0600-48ad-a04e-d3265becc4eb"
 
     fun init(token: String, onInitialized: (() -> Unit)? = null) {
         if (isInitialized) {
@@ -48,6 +48,7 @@ object MonitaSDK {
                     val gson = Gson()
                     val monitoringConfig = gson.fromJson(jsonResponse, MonitoringConfig::class.java)
                     callback(monitoringConfig)
+                    println("monitoringConfig ${monitoringConfig.toString()}")
                 }
             }
 

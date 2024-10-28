@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import com.adobe.marketing.mobile.MobileCore
 import com.facebook.appevents.AppEventsConstants
@@ -41,6 +42,8 @@ class MainActivity : ComponentActivity() {
 
     // Facebook App Events logger instance
     private lateinit var logger: AppEventsLogger
+    val coroutineScope = CoroutineScope(Dispatchers.IO)
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -95,6 +98,8 @@ class MainActivity : ComponentActivity() {
 
         // Log the "Added to Cart" event with the specified parameters.
         logger.logEvent(AppEventsConstants.EVENT_NAME_ADDED_TO_CART, params)
+
+        logFirebaseEvent(firebaseAnalytics)
     }
 
     /**
@@ -108,6 +113,9 @@ class MainActivity : ComponentActivity() {
      * Logs an event to both Firebase and Facebook Analytics.
      */
     private fun logFirebaseEvent(fa: FirebaseAnalytics) {
+
+
+
         val bundle = Bundle().apply {
             putString(FirebaseAnalytics.Param.ITEM_ID, "id_123")
             putString(FirebaseAnalytics.Param.ITEM_NAME, "sample_item")
@@ -115,30 +123,37 @@ class MainActivity : ComponentActivity() {
         }
 
         // Log the event with Facebook
-        logger.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle)
+//        logger.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle)
 
         // Log the event with Firebase
         fa.logEvent("TestEvent", bundle)
+
+        println("logFirebaseEvent button clicked TestEvent =  $bundle ")
     }
 
     private fun loadAd() {
-        val adRequest = AdManagerAdRequest.Builder().build()
+        runOnUiThread {
 
-        AdManagerInterstitialAd.load(
-            this,
-            "/21775744923/example/interstitial",
-            adRequest,
-            object : AdManagerInterstitialAdLoadCallback() {
-                override fun onAdLoaded(ad: AdManagerInterstitialAd) {
-                    interstitialAd = ad
-                    println("Interstitial ad loaded.")
-                }
 
-                override fun onAdFailedToLoad(loadAdError: LoadAdError) {
-                    println("Failed to load interstitial ad: ${loadAdError.message}")
+            val adRequest = AdManagerAdRequest.Builder().build()
+
+            AdManagerInterstitialAd.load(
+                this,
+                "ca-app-pub-3940256099942544/1033173712",
+                adRequest,
+                object : AdManagerInterstitialAdLoadCallback() {
+                    override fun onAdLoaded(ad: AdManagerInterstitialAd) {
+                        interstitialAd = ad
+                        println("Interstitial ad loaded.")
+                    }
+
+                    override fun onAdFailedToLoad(loadAdError: LoadAdError) {
+                        println("Failed to load interstitial ad: ${loadAdError.message}")
+                    }
                 }
-            }
-        )
+            )
+
+        }
     }
 
     private fun showAd() {
@@ -160,22 +175,29 @@ class MainActivity : ComponentActivity() {
 
 
     private fun performApiCall() {
-        val client = OkHttpClient()
-        val request = Request.Builder()
-            .url("https://jsonplaceholder.typicode.com/posts")
-            .build()
 
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                println("HTTP call failed: ${e.message}")
-            }
+        coroutineScope.launch {
+            sendPurchaseEvent(this@MainActivity)
+        }
 
-            override fun onResponse(call: Call, response: Response) {
-                response.body?.string()?.let {
-                    println("HTTP call response: $it")
-                }
-            }
-        })
+
+
+//        val client = OkHttpClient()
+//        val request = Request.Builder()
+//            .url("https://jsonplaceholder.typicode.com/posts")
+//            .build()
+//
+//        client.newCall(request).enqueue(object : Callback {
+//            override fun onFailure(call: Call, e: IOException) {
+//                println("HTTP call failed: ${e.message}")
+//            }
+//
+//            override fun onResponse(call: Call, response: Response) {
+//                response.body?.string()?.let {
+//                    println("HTTP call response: $it")
+//                }
+//            }
+//        })
     }
 
 

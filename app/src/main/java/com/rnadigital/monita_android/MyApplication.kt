@@ -14,7 +14,8 @@ import com.rnadigital.monita_android_sdk.MonitaSDK
 
 class MyApplication : Application() {
     val token = "fe041147-0600-48ad-a04e-d3265becc4eb"
-//    private val ENVIRONMENT_FILE_ID = "YOUR_APP_ENVIRONMENT_ID"
+
+    private val ENVIRONMENT_FILE_ID = "3149c49c3910/b6541e5e6301/launch-f7ac0a320fb3-development"
 
 
     override fun onCreate() {
@@ -30,9 +31,9 @@ class MyApplication : Application() {
 
         // Initialize Adobe Mobile SDK Core
         MobileCore.setApplication(this)
-//        MobileCore.configureWithAppID(ENVIRONMENT_FILE_ID);
+        MobileCore.configureWithAppID(ENVIRONMENT_FILE_ID);
 
-        MobileCore.setLogLevel(LoggingMode.DEBUG)
+//        MobileCore.setLogLevel(LoggingMode.DEBUG)
 
         // Register Adobe extensions
         try {
