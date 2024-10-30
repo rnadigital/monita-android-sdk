@@ -56,6 +56,10 @@ dependencies {
 
     implementation (libs.okhttp) // or latest version
     implementation (libs.gson) // Use the latest version if available
+    implementation (libs.androidx.work.runtime.ktx)
+    implementation (libs.androidx.room.ktx)
+
+
 
 
 //    implementation (libs.firebase.analytics.ktx)

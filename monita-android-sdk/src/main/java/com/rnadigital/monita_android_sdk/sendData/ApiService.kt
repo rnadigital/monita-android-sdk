@@ -23,45 +23,13 @@ class ApiService {
     }
     // Function to send POST request with dynamic data
     fun postData(
-        sdkVersion: String = "1.0",          // SDK version
-        appVersion: String = "1.0",          // App version
-        vendorEvent: String,         // Vendor event
-        vendorName: String,          // Vendor name (case-sensitive)
-        httpMethod: String,          // HTTP method (POST)
-        capturedUrl: String,         // Captured HTTP endpoint URL
-        appId: String = "com.rnadigital.monita_android",               // App ID
-        sessionId: String ="",           // Session ID
-        consentString: String = "GRANTED",       // Consent string value
-        hostAppVersion: String = "com.rnadigital.monita_android",      // Host app version
-        dtData: List<Map<String, Any>>         // Dynamic payload content
+        requestPayload: RequestPayload    // Dynamic payload content
     ) {
         val url = "https://dev-stream.getmonita.io/api/v1/"
 
-        // Create the payload with dynamic data
-        val payload = RequestPayload(
-            t = MonitaSDK.token,
-            dm = "app", // Deployment method (app for SDK based deployments)
-            mv = sdkVersion,
-            sv = appVersion,
-            tm = System.currentTimeMillis().toDouble() / 1000.0, // Unix time in seconds with milliseconds
-            e = vendorEvent,
-            vn = vendorName,
-            st = "", // HTTP call status, can be success/failed (for now it's null)
-            m = httpMethod,
-            vu = capturedUrl,
-            u = appId,
-            p = "",  // App area or null
-            dt = dtData, // Dynamic payload data
-            rl = sdkVersion, // SDK release version
-            `do` = hostAppVersion,
-            cn = consentString,
-            sid = sessionId,
-            cid = "" // Customer ID (null or SDK generated)
-        )
-
         // Convert the payload to JSON string using Gson
         val gson = Gson()
-        val jsonPayload = gson.toJson(payload)
+        val jsonPayload = gson.toJson(requestPayload)
 
         // Create the request body
         val body = jsonPayload.toRequestBody(JSON)

@@ -23,7 +23,7 @@ class MyApplication : Application() {
 
         val policy = ThreadPolicy.Builder().permitAll().build()
         StrictMode.setThreadPolicy(policy)
-        MonitaSDK.init (token){}
+        MonitaSDK.init (applicationContext,token){}
 
         FacebookSdk.sdkInitialize(this)
         AppEventsLogger.activateApp(this)

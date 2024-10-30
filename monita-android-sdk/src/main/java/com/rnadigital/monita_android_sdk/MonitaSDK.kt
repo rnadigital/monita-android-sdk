@@ -1,5 +1,6 @@
 package com.rnadigital.monita_android_sdk
 
+import android.content.Context
 import com.google.gson.Gson
 import com.rnadigital.monita_android_sdk.monitoringConfig.MonitoringConfig
 import okhttp3.Call
@@ -8,18 +9,28 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import okio.IOException
+import java.lang.ref.WeakReference
 
 object MonitaSDK {
     var isInitialized = false
     lateinit var monitoringConfig: MonitoringConfig
     var token = "fe041147-0600-48ad-a04e-d3265becc4eb"
+    private var contextReference: WeakReference<Context>? = null // Weak reference to context
 
-    fun init(token: String, onInitialized: (() -> Unit)? = null) {
+    fun init(context: Context, token: String,  onInitialized: (() -> Unit)? = null) {
         if (isInitialized) {
             onInitialized?.invoke() // Already initialized, notify immediately
-            this.token = token
             return
         }
+
+        //get CID
+        //get SID
+        // Get CN
+        // Refresh fetchMonitoringConfig
+        // enable Logs
+
+        this.token = token
+        contextReference = WeakReference(context.applicationContext) // Store as weak reference to avoid leaks
 
         fetchMonitoringConfig(token) { monitoringConfig ->
             this.monitoringConfig = monitoringConfig
@@ -28,9 +39,19 @@ object MonitaSDK {
         }
     }
 
+    fun refreshMonitoringConfig(){
+        fetchMonitoringConfig(token) { monitoringConfig ->
+            this.monitoringConfig = monitoringConfig
+            isInitialized = true
+        }
+    }
+
+    fun getMonitaContext(): Context? {
+        return contextReference?.get() // Returns the application context if available
+    }
 
 
-    private fun fetchMonitoringConfig(token: String, callback: (MonitoringConfig) -> Unit) {
+    fun fetchMonitoringConfig(token: String, callback: (MonitoringConfig) -> Unit) {
 
         val unixTime = System.currentTimeMillis()
 
