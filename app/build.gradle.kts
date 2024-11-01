@@ -10,7 +10,7 @@ plugins {
 
 android {
     namespace = "com.rnadigital.monita_android"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.rnadigital.monita_android"

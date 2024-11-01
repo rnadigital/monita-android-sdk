@@ -4,6 +4,7 @@ import net.bytebuddy.asm.Advice
 import android.os.Bundle
 import com.example.SendDataToServer
 import com.facebook.appevents.AppEventsLogger
+import com.rnadigital.monita_android_sdk.Logger
 
 object LogEventAdviceFb {
 
@@ -22,7 +23,7 @@ object LogEventAdviceFb {
 
 //        logger.logEvent(eventName,params)
         // Log the event name and the contents of the params bundle
-        println("Intercepted Facebook logEvent: eventName=$eventName, params=${bundleToString(params)}")
+        Logger().log("Intercepted Facebook logEvent: eventName=$eventName, params=${bundleToString(params)}")
     }
 
 

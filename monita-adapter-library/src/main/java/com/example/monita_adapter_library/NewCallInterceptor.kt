@@ -1,5 +1,6 @@
 package com.example.monita_adapter_library
 
+import com.rnadigital.monita_android_sdk.Logger
 import net.bytebuddy.implementation.bind.annotation.AllArguments
 import net.bytebuddy.implementation.bind.annotation.Origin
 import net.bytebuddy.implementation.bind.annotation.RuntimeType
@@ -21,7 +22,7 @@ object NewCallInterceptor {
     ): Call {
         // Extract the Request object from the arguments
         val request = args[0] as Request
-        println("Intercepting OkHttpClient.newCall: ${request.url}")
+        Logger().log("Intercepting OkHttpClient.newCall: ${request.url}")
 
         // Add custom logic before calling the original newCall method
         // For example, you can modify the request here if needed

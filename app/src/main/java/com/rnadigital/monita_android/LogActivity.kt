@@ -1,6 +1,7 @@
 package com.rnadigital.monita_android
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -15,6 +16,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.analytics
 import com.rnadigital.monita_android.ui.theme.Monita_androidTheme
+import com.rnadigital.monita_android_sdk.Logger
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.OkHttpClient
@@ -50,17 +52,17 @@ class LogActivity : ComponentActivity() {
     private fun logFacebookEvent() {
         // Facebook analytics logic goes here (replace with actual implementation)
         // FacebookSdk.sdkInitialize(applicationContext)
-        println("Facebook analytics event logged.")
+        Log.d("android App", "Facebook analytics event logged.")
     }
 
     private fun logAdobeEvent() {
         // Adobe analytics logic goes here (replace with actual implementation)
-        println("Adobe analytics event logged.")
+        Log.d("android App","Adobe analytics event logged.")
     }
 
     private fun loadGoogleAds() {
         // Google AdMob logic goes here (replace with actual implementation)
-        println("Google Ad loaded.")
+        Log.d("android App","Google Ad loaded.")
     }
 
     private fun performApiCall() {
@@ -71,12 +73,12 @@ class LogActivity : ComponentActivity() {
 
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                println("HTTP call failed: ${e.message}")
+                Log.d("android App","HTTP call failed: ${e.message}")
             }
 
             override fun onResponse(call: Call, response: Response) {
                 response.body?.string()?.let {
-                    println("HTTP call response: $it")
+                    Log.d("android App","HTTP call response: $it")
                 }
             }
         })

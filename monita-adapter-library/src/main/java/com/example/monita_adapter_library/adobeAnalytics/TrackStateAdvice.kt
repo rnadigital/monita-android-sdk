@@ -3,6 +3,7 @@ package com.example.monita_adapter_library.adobeAnalytics
 import net.bytebuddy.asm.Advice
 import android.os.Bundle
 import com.example.SendDataToServer
+import com.rnadigital.monita_android_sdk.Logger
 import org.json.JSONObject
 
 
@@ -15,8 +16,8 @@ object TrackStateAdvice {
         @Advice.Argument(1) contextData: Map<String, Any>?
     ) {
         // Log the state being tracked
-        println("Intercepted Adobe Analytics trackState: state=$state")
-        println("Intercepted Adobe Analytics Context data: ${contextData?.toString() ?: "No context data"}")
+        Logger().log("Intercepted Adobe Analytics trackState: state=$state")
+        Logger().log("Intercepted Adobe Analytics Context data: ${contextData?.toString() ?: "No context data"}")
 
         // Convert contextData to Bundle
         val dataBundle = Bundle().apply {
@@ -38,7 +39,7 @@ object TrackStateAdvice {
         }
 
         // Log the modified context data for debugging
-        println("Modified context data in Bundle: $dataBundle")
+        Logger().log("Modified context data in Bundle: $dataBundle")
 
         // Send data to server
         SendDataToServer().uploadAdobeAnalyticsData("track_state_event", dataBundle)

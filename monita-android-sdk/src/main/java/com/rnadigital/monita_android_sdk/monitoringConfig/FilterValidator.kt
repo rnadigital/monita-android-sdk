@@ -1,5 +1,7 @@
 package com.rnadigital.monita_android_sdk.monitoringConfig
 
+import com.rnadigital.monita_android_sdk.Logger
+
 object FilterValidator {
 
     fun excludeParameters(dataList: List<Map<String, Any>>, excludeParameters: List<String> = emptyList()): List<Map<String, Any>> {
@@ -66,21 +68,21 @@ object FilterValidator {
             val op: String = filter?.op ?: ""
             val values: List<String>? = filter?.`val`
 
-            println("Intercepted validateFilters started ")
+            Logger().log("Intercepted validateFilters started ")
 
             var filterMatchFound = false
             for (data in dtData) {
 
                 val value = findValueByKey(data, key) // Use recursive key search
-                println("Intercepted FilterValidator key $key value $value ")
+                Logger().log("Intercepted FilterValidator key $key value $value ")
 
                 if (value == null) {
                     if (op == "exist") {
-                        println("Intercepted FilterValidator exist Key must exist ")
+                        Logger().log("Intercepted FilterValidator exist Key must exist ")
                         return false // Key must exist
                     } else if (op == "not_exist") {
                         filterMatchFound = true
-                        println("FilterValidator not_exist Key should not exist ")
+                        Logger().log("FilterValidator not_exist Key should not exist ")
                         break // Key should not exist; condition is true for this item
                     }
                 } else {
@@ -100,7 +102,7 @@ object FilterValidator {
     }
 
     private fun evaluateCondition(value: Any?, op: String, values: List<String>): Boolean {
-        println("Intercepted FilterValidator evaluateCondition ")
+        Logger().log("Intercepted FilterValidator evaluateCondition ")
 
         return when (op) {
             "eq" -> values.contains(value.toString())

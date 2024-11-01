@@ -42,13 +42,13 @@ class OkHttpInterceptor {
             val wrappedCallback = object : Callback {
                 override fun onResponse(call: Call, response: Response) {
                     // Intercept the response here
-                    println("Intercepted response: ${response.code}")
+                    Log.d("android App","Intercepted response: ${response.code}")
                     responseCallback.onResponse(call, response)
                 }
 
                 override fun onFailure(call: Call, e: IOException) {
                     // Intercept the error here
-                    println("Intercepted failure: ${e.message}")
+                    Log.d("android App","Intercepted failure: ${e.message}")
                     responseCallback.onFailure(call, e)
                 }
             }

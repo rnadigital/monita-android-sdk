@@ -3,12 +3,14 @@ package com.rnadigital.monita_android
 import android.app.Application
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
+import android.util.Log
 import com.adobe.marketing.mobile.Analytics
 import com.adobe.marketing.mobile.Extension
 import com.adobe.marketing.mobile.LoggingMode
 import com.adobe.marketing.mobile.MobileCore
 import com.facebook.FacebookSdk
 import com.facebook.appevents.AppEventsLogger
+import com.rnadigital.monita_android_sdk.Logger
 import com.rnadigital.monita_android_sdk.MonitaSDK
 
 
@@ -23,7 +25,13 @@ class MyApplication : Application() {
 
         val policy = ThreadPolicy.Builder().permitAll().build()
         StrictMode.setThreadPolicy(policy)
-        MonitaSDK.init (applicationContext,token){}
+        MonitaSDK.Builder(this)
+            .enableLogger(false) // Enable logging
+            .setToken(token) // Set the token
+            .build {
+                // Callback when initialization is complete
+                // You can place any setup code here
+            }
 
         FacebookSdk.sdkInitialize(this)
         AppEventsLogger.activateApp(this)
@@ -38,10 +46,10 @@ class MyApplication : Application() {
         // Register Adobe extensions
         try {
             MobileCore.registerExtensions(listOf(Analytics::class.java as Class<out Extension>)) {
-            println("Adobe Analytics extension registered successfully.")
+                Log.d("android App","Adobe Analytics extension registered successfully.")
             }
         } catch (e: Exception) {
-            println("Error registering Adobe Analytics extension: ${e.message}")
+            Log.d("android App","Error registering Adobe Analytics extension: ${e.message}")
         }
     }
 }

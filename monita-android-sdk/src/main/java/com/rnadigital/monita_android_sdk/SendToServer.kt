@@ -4,7 +4,6 @@ import android.os.Bundle
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.rnadigital.monita_android_sdk.MonitaSDK.monitoringConfig
 import com.rnadigital.monita_android_sdk.monitoringConfig.FilterValidator
 import com.rnadigital.monita_android_sdk.monitoringConfig.FilterValidator.findValueByKey
 import com.rnadigital.monita_android_sdk.monitoringConfig.Vendor
@@ -20,6 +19,7 @@ class SendToServer(
 ) {
     private val apiService = ApiService()
     private val logger: Logger = Logger()
+    private val monitoringConfig = MonitaSDK.getMonitoringConfig()
 
 
     fun vendorUrlMatched(url: String): Vendor? {
@@ -89,7 +89,7 @@ class SendToServer(
 
     fun createAdobeAnalyticsMonitaData( name: String, params: Bundle) {
 
-        println("Intercepted createAdobeAnalyticsMonitaData")
+        Logger().log("Intercepted createAdobeAnalyticsMonitaData")
 
 
         val url = "b/ss"
@@ -111,13 +111,13 @@ class SendToServer(
             logger.log("request.method: pos")
             logger.log("request.url: $url")
             val isValid = vendor?.filters?.let {
-                println("Intercepted vendor.filters $it")
+                Logger().log("Intercepted vendor.filters $it")
                 FilterValidator.validateFilters(dtData, it)
             }
 
 
            dtData = vendor?.execludeParameters?.let { FilterValidator.excludeParameters(dtData, it) }!!
-           println("newDtData $dtData")
+           Logger().log("newDtData $dtData")
 
             if (isValid == true){
                 sendToMonita(
@@ -138,7 +138,7 @@ class SendToServer(
 
     fun createGoogleAdsMonitaData( name: String, params: Bundle) {
 
-        println("Intercepted createGoogleAdsMonitaData")
+        Logger().log("Intercepted createGoogleAdsMonitaData")
 
 
         val url = "googleadservices.com/pagead/conversion/"
@@ -161,12 +161,12 @@ class SendToServer(
             logger.log("request.url: $url")
 
             val isValid = vendor?.filters?.let {
-                println("Intercepted vendor.filters $it")
+                Logger().log("Intercepted vendor.filters $it")
                 FilterValidator.validateFilters(dtData, it)
             }
 
             dtData = vendor?.execludeParameters?.let { FilterValidator.excludeParameters(dtData, it) }!!
-            println("newDtData $dtData")
+            Logger().log("newDtData $dtData")
 
             if (isValid == true){
                 sendToMonita(
@@ -187,7 +187,7 @@ class SendToServer(
 
 
     fun createFacebookMonitaData( name: String, params: Bundle) {
-        println("Intercepted createGoogleAdsMonitaData")
+        Logger().log("Intercepted createGoogleAdsMonitaData")
 
 
         val url = "facebook.com/tr/"
@@ -209,12 +209,12 @@ class SendToServer(
             logger.log("request.method: pos")
             logger.log("request.url: $url")
             val isValid = vendor?.filters?.let {
-                println("Intercepted vendor.filters $it")
+                Logger().log("Intercepted vendor.filters $it")
                 FilterValidator.validateFilters(dtData, it)
             }
 
             dtData = vendor?.execludeParameters?.let { FilterValidator.excludeParameters(dtData, it) }!!
-            println("newDtData $dtData")
+            Logger().log("newDtData $dtData")
 
             if (isValid == true){
                 sendToMonita(
@@ -233,7 +233,7 @@ class SendToServer(
 
     fun createFirebaseMonitaData(fa: FirebaseAnalytics, name: String, params: Bundle) {
 
-        println("Intercepted createFirebaseMonitaData")
+        Logger().log("Intercepted createFirebaseMonitaData")
 
 
         val url = "firebase.googleapis.com"
@@ -255,12 +255,12 @@ class SendToServer(
             logger.log("request.url: $url")
 
             val isValid = vendor?.filters?.let {
-                println("Intercepted vendor.filters $it")
+                Logger().log("Intercepted vendor.filters $it")
                 FilterValidator.validateFilters(dtData, it)
             }
 
             dtData = vendor?.execludeParameters?.let { FilterValidator.excludeParameters(dtData, it) }!!
-            println("newDtData $dtData")
+            Logger().log("newDtData $dtData")
 
             if (isValid == true) {
 
@@ -280,7 +280,7 @@ class SendToServer(
 
     fun createHTTPMonitaData(request: Request) {
 
-        println("Intercepted createHTTPMonitaData")
+        Logger().log("Intercepted createHTTPMonitaData")
 
 
         val url = request.url.toString()
@@ -296,9 +296,9 @@ class SendToServer(
             val requestBodyMap: Map<String, Any> = getDtData(requestBodyString)
             var dtData = listOf(requestBodyMap)
             val eventParameterValue =   vendor?.eventParamter?.let { searchKeyInList(dtData, it) }
-            println("Intercepted vendor?.eventParamter ${vendor?.eventParamter}")
+            Logger().log("Intercepted vendor?.eventParamter ${vendor?.eventParamter}")
 
-            println("Intercepted eventParameterValue $eventParameterValue")
+            Logger().log("Intercepted eventParameterValue $eventParameterValue")
 
 
             logger.log("vendors.eventParamter: ${vendor?.eventParamter}")
@@ -306,13 +306,13 @@ class SendToServer(
             logger.log("request.method: ${request.method}")
             logger.log("request.url: ${request.url}")
             val isValid = vendor?.filters?.let {
-                println("Intercepted vendor.filters $it")
+                Logger().log("Intercepted vendor.filters $it")
                 FilterValidator.validateFilters(dtData, it)
             }
 
-            println("Intercepted vendor.filters $isValid")
+            Logger().log("Intercepted vendor.filters $isValid")
             dtData = vendor?.execludeParameters?.let { FilterValidator.excludeParameters(dtData, it) }!!
-            println("newDtData $dtData")
+            Logger().log("newDtData $dtData")
 
             if (isValid == true) {
 
@@ -335,8 +335,8 @@ class SendToServer(
 
             val value = findValueByKey(map, key).toString()
 
-            println("searchKeyInList map $map has key $key")
-                println("searchKeyInList map[key].toString() ${map[key].toString()}")
+            Logger().log("searchKeyInList map $map has key $key")
+                Logger().log("searchKeyInList map[key].toString() ${map[key].toString()}")
 
                 return value // Return the value if key exists
 

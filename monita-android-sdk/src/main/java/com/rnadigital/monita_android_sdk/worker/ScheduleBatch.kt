@@ -31,7 +31,7 @@ class ScheduleBatch(private val context: Context) {
         dtData: List<Map<String, Any>>         // Dynamic payload content
     ) {
         val requestPayload :RequestPayload = RequestPayload(
-            t = MonitaSDK.token,
+            t = MonitaSDK.getSDKToken(),
             dm = "app", // Deployment method (app for SDK based deployments)
             mv = sdkVersion,
             sv = appVersion,

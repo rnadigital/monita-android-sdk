@@ -5,7 +5,7 @@ import net.bytebuddy.asm.Advice
 import android.os.Bundle
 import com.example.SendDataToServer
 import com.google.firebase.analytics.FirebaseAnalytics
-
+import com.rnadigital.monita_android_sdk.Logger
 
 
 object LogEventAdvice {
@@ -18,7 +18,7 @@ object LogEventAdvice {
         @Advice.Argument(1) params: Bundle
     ) {
         // Log the event name and the contents of the params bundle
-        println("Intercepted Firebase logEvent: name=$name, params=${bundleToString(params)}")
+        Logger().log("Intercepted Firebase logEvent: name=$name, params=${bundleToString(params)}")
         SendDataToServer().uploadFirebaseData(fa, name, params)
 //        fa.logEvent(name,params)
     }
@@ -49,7 +49,7 @@ object SetDefaultEventParametersAdvice {
 
 
         // Log or handle setDefaultEventParameters call
-        println("Intercepted Firebase setDefaultEventParameters: parameters=$parameters")
+        Logger().log("Intercepted Firebase setDefaultEventParameters: parameters=$parameters")
 //        fa.setDefaultEventParameters(parameters)
     }
 }
@@ -65,7 +65,7 @@ object SetCurrentScreenAdvice {
         @Advice.Argument(2) screenClassOverride: String?
     ) {
         // Log or handle setCurrentScreen call
-        println("Intercepted Firebase setCurrentScreen: activity=${activity.localClassName}, screenName=$screenName, screenClassOverride=$screenClassOverride")
+        Logger().log("Intercepted Firebase setCurrentScreen: activity=${activity.localClassName}, screenName=$screenName, screenClassOverride=$screenClassOverride")
 //    fa.setCurrentScreen(activity,screenName,screenClassOverride)
     }
 }
@@ -79,7 +79,7 @@ object SetUserIdAdvice {
         @Advice.Argument(0) id: String
     ) {
         // Log or handle setUserId call
-        println("Intercepted Firebase setUserId: id=$id")
+        Logger().log("Intercepted Firebase setUserId: id=$id")
 //        fa.setUserId(id)
     }
 }
@@ -94,7 +94,7 @@ object SetUserPropertyAdvice {
         @Advice.Argument(1) value: String?
     ) {
         // Log or handle setUserProperty call
-        println("Intercepted Firebase setUserProperty: name=$name, value=$value")
+        Logger().log("Intercepted Firebase setUserProperty: name=$name, value=$value")
 //        fa.setUserProperty(name,value)
     }
 }
@@ -109,7 +109,7 @@ object SetAnalyticsCollectionEnabledAdvice {
         @Advice.Argument(0) enabled: Boolean // The first and only argument: 'enabled'
     ) {
         // Log or handle setAnalyticsCollectionEnabled call
-        println("Intercepted Firebase setAnalyticsCollectionEnabled: enabled=$enabled")
+        Logger().log("Intercepted Firebase setAnalyticsCollectionEnabled: enabled=$enabled")
 //        fa.setAnalyticsCollectionEnabled(enabled)
     }
 }

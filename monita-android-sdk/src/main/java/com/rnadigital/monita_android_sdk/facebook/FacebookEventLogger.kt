@@ -1,5 +1,6 @@
 package com.rnadigital.monita_android_sdk.facebook
 
+import com.rnadigital.monita_android_sdk.Logger
 import com.rnadigital.monita_android_sdk.OkHttpClientProvider
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -63,9 +64,9 @@ class FacebookEventLogger {
 
             override fun onResponse(call: Call, response: Response) {
                 if (response.isSuccessful) {
-                    println("Event logged successfully: ${response.body?.string()}")
+                    Logger().log("Event logged successfully: ${response.body?.string()}")
                 } else {
-                    println("Failed to log event: ${response.body?.string()}")
+                    Logger().log("Failed to log event: ${response.body?.string()}")
                 }
             }
         })

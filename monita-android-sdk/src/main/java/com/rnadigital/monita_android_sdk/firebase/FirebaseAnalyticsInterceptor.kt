@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.rnadigital.monita_android_sdk.Logger
 
 class FirebaseAnalyticsInterceptor(private val context: Context) {
 
@@ -21,7 +22,7 @@ class FirebaseAnalyticsInterceptor(private val context: Context) {
     // Intercept the event and send it to the custom tracking server
     private fun interceptEvent(eventName: String, params: Bundle) {
         // Log event interception (could send this to a custom tracking server)
-        Log.d("TrackingPlanSDK", "Intercepting event: $eventName with params: $params")
+        Logger().log("TrackingPlanSDK", "Intercepting event: $eventName with params: $params")
 
         // Simulate sending event to a custom server
         sendToCustomServer(eventName, params)
@@ -30,7 +31,7 @@ class FirebaseAnalyticsInterceptor(private val context: Context) {
     // Simulate sending the event data to a custom server
     private fun sendToCustomServer(eventName: String, params: Bundle) {
         // Here you would make a network call to send the event to your server
-        Log.d("TrackingPlanSDK", "Sending event to custom server: $eventName")
+        Logger().log("TrackingPlanSDK", "Sending event to custom server: $eventName")
         // Example: Use OkHttpClient or Retrofit to send the event to a custom backend
     }
 }

@@ -1,6 +1,7 @@
 package com.rnadigital.monita_android
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -18,6 +19,7 @@ import com.google.android.gms.ads.admanager.AdManagerInterstitialAd
 import com.google.android.gms.ads.admanager.AdManagerInterstitialAdLoadCallback
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.rnadigital.monita_android.ui.theme.Monita_androidTheme
+import com.rnadigital.monita_android_sdk.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -128,7 +130,7 @@ class MainActivity : ComponentActivity() {
         // Log the event with Firebase
         fa.logEvent("TestEvent", bundle)
 
-        println("logFirebaseEvent button clicked TestEvent =  $bundle ")
+        Log.d("android App","logFirebaseEvent button clicked TestEvent =  $bundle ")
     }
 
     private fun loadAd() {
@@ -144,11 +146,11 @@ class MainActivity : ComponentActivity() {
                 object : AdManagerInterstitialAdLoadCallback() {
                     override fun onAdLoaded(ad: AdManagerInterstitialAd) {
                         interstitialAd = ad
-                        println("Interstitial ad loaded.")
+                        Log.d("android App","Interstitial ad loaded.")
                     }
 
                     override fun onAdFailedToLoad(loadAdError: LoadAdError) {
-                        println("Failed to load interstitial ad: ${loadAdError.message}")
+                        Log.d("android App","Failed to load interstitial ad: ${loadAdError.message}")
                     }
                 }
             )
@@ -189,12 +191,12 @@ class MainActivity : ComponentActivity() {
 //
 //        client.newCall(request).enqueue(object : Callback {
 //            override fun onFailure(call: Call, e: IOException) {
-//                println("HTTP call failed: ${e.message}")
+//                Log.d("HTTP call failed: ${e.message}")
 //            }
 //
 //            override fun onResponse(call: Call, response: Response) {
 //                response.body?.string()?.let {
-//                    println("HTTP call response: $it")
+//                    Log.d("HTTP call response: $it")
 //                }
 //            }
 //        })

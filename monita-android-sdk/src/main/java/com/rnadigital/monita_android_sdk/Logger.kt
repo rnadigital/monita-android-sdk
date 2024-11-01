@@ -3,26 +3,31 @@ package com.rnadigital.monita_android_sdk
 import android.util.Log
 import okhttp3.Request
 import okhttp3.Response
-import okio.Buffer
 
 class Logger {
 
     fun log(message: String) {
         // Here you can define how to log the message (e.g., using Android Logcat, or saving to a file)
-        Log.d("SDKLogger", message) // This is an example using Android's Logcat
+        if (MonitaSDK.isLoggerEnabled()) Log.d("Monita SDK Logger", message)
     }
+
+    fun log(name: String, message: String) {
+        // Here you can define how to log the message (e.g., using Android Logcat, or saving to a file)
+        if (MonitaSDK.isLoggerEnabled()) Log.d("Monita SDK Logger", "$name - $message")
+    }
+
     fun logRequest(request: Request) {
         // Log or process the request data
+            log("Request URL: ${request.url}")
+            log("Request Method: ${request.method}")
+            log("Request Body: ${request.body?.toString()}")
 
-
-        println("Request URL: ${request.url}")
-        println("Request Method: ${request.method}")
-//        println("Request Body: ${request.body?.toString()}")
     }
 
     fun logResponse(response: Response) {
         // Log or process the response data
-        println("Response Code: ${response.code}")
-        println("Response Body: ${response.body?.string()}")
+            log("Response Code: ${response.code}")
+            log("Response Body: ${response.body?.string()}")
+
     }
 }

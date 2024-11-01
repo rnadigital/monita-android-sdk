@@ -8,6 +8,7 @@ import com.google.android.gms.ads.admanager.AdManagerAdRequest
 import com.google.android.gms.ads.admanager.AdManagerInterstitialAd
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.admanager.AdManagerInterstitialAdLoadCallback
+import com.rnadigital.monita_android_sdk.Logger
 
 object LoadAdAdvice {
 
@@ -28,7 +29,7 @@ object LoadAdAdvice {
         }
 
         // Log for debugging purposes
-        println("Intercepted AdManagerInterstitialAd.load: adUnitId=$adUnitId, adRequest=$adDataBundle")
+        Logger().log("Intercepted AdManagerInterstitialAd.load: adUnitId=$adUnitId, adRequest=$adDataBundle")
 
         // Send data to server
         SendDataToServer().uploadGoogleAdsData("load_ad_event", adDataBundle)
@@ -37,6 +38,6 @@ object LoadAdAdvice {
     @JvmStatic
     @Advice.OnMethodExit
     fun onExit() {
-        println("AdManagerInterstitialAd.load has been called.")
+        Logger().log("AdManagerInterstitialAd.load has been called.")
     }
 }

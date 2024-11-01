@@ -8,6 +8,7 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.rnadigital.monita_android_sdk.Logger
 import com.rnadigital.monita_android_sdk.MonitaSDK
 import com.rnadigital.monita_android_sdk.sendData.RequestPayload
 import okhttp3.OkHttpClient
@@ -34,7 +35,7 @@ class MonitaUploadWorker(
         return try {
             // Send data using ApiService
             apiService.postData( requestPayload)
-            Log.d("MonitaUploadWorker", "Successfully posted batch data")
+            Logger().log("MonitaUploadWorker", "Successfully posted batch data")
             Result.success()
         } catch (e: IOException) {
             Log.e("MonitaUploadWorker", "Failed to post data", e)

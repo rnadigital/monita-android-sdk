@@ -2,6 +2,7 @@ package com.rnadigital.monita_android_sdk.sendData
 
 import android.util.Log
 import com.google.gson.Gson
+import com.rnadigital.monita_android_sdk.Logger
 import com.rnadigital.monita_android_sdk.MonitaSDK
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
@@ -50,11 +51,11 @@ class ApiService {
             override fun onResponse(call: Call, response: Response) {
                 if (response.isSuccessful) {
 
-                    Log.d("SDKLogger", "Successfully posted data to Monita") // This is an example using Android's Logcat
+                    Logger().log("SDKLogger", "Successfully posted data to Monita") // This is an example using Android's Logcat
 
-                    println("intercepted : Successfully posted data to Monita! response.code ${response.code}")
+                    Logger().log("intercepted : Successfully posted data to Monita! response.code ${response.code}")
                 } else {
-                    println("Failed to post data: ${response.message}")
+                    Logger().log("Failed to post data: ${response.message}")
                 }
             }
         })

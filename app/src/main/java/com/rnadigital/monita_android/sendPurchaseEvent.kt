@@ -2,12 +2,14 @@ package com.rnadigital.monita_android
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.*
 import android.widget.Toast
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.rnadigital.monita_android_sdk.Logger
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okio.IOException
 import kotlin.coroutines.resume
@@ -50,18 +52,18 @@ suspend fun sendPurchaseEvent(context: Context) {
     try {
         val response = client.newCall(request).await()
         if (response.isSuccessful) {
-            println("Successfully sent the OKHttp purchase event!")
+            Log.d("Android App", "Successfully sent the OKHttp purchase event!")
             withContext(Dispatchers.Main) {
                 Toast.makeText(context, "Purchase successful!", Toast.LENGTH_SHORT).show()
             }
         } else {
-            println("Failed to send the OKHttp event: ${response.message}")
+            Log.d("Android App","Failed to send the OKHttp event: ${response.message}")
             withContext(Dispatchers.Main) {
                 Toast.makeText(context, "Purchase failed: ${response.message}", Toast.LENGTH_SHORT).show()
             }
         }
     } catch (e: Exception) {
-        println("Error sending purchase OKHttp event: ${e.message}")
+        Log.d("Android App","Error sending purchase OKHttp event: ${e.message}")
         withContext(Dispatchers.Main) {
             Toast.makeText(context, "Network error: ${e.message}", Toast.LENGTH_SHORT).show()
         }

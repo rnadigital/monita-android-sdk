@@ -12,46 +12,81 @@ import okio.IOException
 import java.lang.ref.WeakReference
 
 object MonitaSDK {
-    var isInitialized = false
-    lateinit var monitoringConfig: MonitoringConfig
-    var token = "fe041147-0600-48ad-a04e-d3265becc4eb"
-    private var contextReference: WeakReference<Context>? = null // Weak reference to context
+    private var isInitialized = false
+    private var enableLogger = false
+    private val logger = Logger()
+    private lateinit var monitoringConfig: MonitoringConfig
+    private var token: String = ""
+    private var contextReference: WeakReference<Context>? = null
 
-    fun init(context: Context, token: String,  onInitialized: (() -> Unit)? = null) {
+
+
+
+    class Builder(private val context: Context) {
+
+        fun enableLogger(loggerEnabled: Boolean): Builder = apply { enableLogger = loggerEnabled }
+        fun setToken(t: String): Builder = apply { token = t }
+
+        fun build(onInitialized: (() -> Unit)? = null) {
+            init(context, onInitialized)
+        }
+    }
+
+    //get CID
+    //get SID
+    // Get CN
+    // Refresh fetchMonitoringConfig
+    // enable Logs
+
+   private fun init(
+        context: Context,
+        onInitialized: (() -> Unit)? = null
+    ) {
         if (isInitialized) {
             onInitialized?.invoke() // Already initialized, notify immediately
             return
         }
 
-        //get CID
-        //get SID
-        // Get CN
-        // Refresh fetchMonitoringConfig
-        // enable Logs
 
-        this.token = token
-        contextReference = WeakReference(context.applicationContext) // Store as weak reference to avoid leaks
+       contextReference = WeakReference(context.applicationContext)
 
         fetchMonitoringConfig(token) { monitoringConfig ->
             this.monitoringConfig = monitoringConfig
             isInitialized = true
             onInitialized?.invoke()
+            logger.log("Fetching monitoring Config")
         }
     }
 
-    fun refreshMonitoringConfig(){
+    fun refreshMonitoringConfig() {
         fetchMonitoringConfig(token) { monitoringConfig ->
             this.monitoringConfig = monitoringConfig
             isInitialized = true
+            logger.log("Refreshing monitoring Config")
         }
+    }
+
+    fun isLoggerEnabled(): Boolean {
+        return enableLogger
     }
 
     fun getMonitaContext(): Context? {
         return contextReference?.get() // Returns the application context if available
     }
 
+    fun getMonitoringConfig(): MonitoringConfig {
+        return monitoringConfig // Returns the application context if available
+    }
 
-    fun fetchMonitoringConfig(token: String, callback: (MonitoringConfig) -> Unit) {
+    fun getSDKToken(): String {
+        return token // Returns the application context if available
+    }
+
+    fun isSDKInitialized(): Boolean {
+        return isInitialized
+    }
+
+    private fun fetchMonitoringConfig(token: String, callback: (MonitoringConfig) -> Unit) {
 
         val unixTime = System.currentTimeMillis()
 
@@ -69,7 +104,7 @@ object MonitaSDK {
                     val gson = Gson()
                     val monitoringConfig = gson.fromJson(jsonResponse, MonitoringConfig::class.java)
                     callback(monitoringConfig)
-                    println("monitoringConfig ${monitoringConfig.toString()}")
+                    logger.log("monitoringConfig ${monitoringConfig.toString()}")
                 }
             }
 

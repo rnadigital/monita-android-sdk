@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.rnadigital.monita_android_sdk"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 24
