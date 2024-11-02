@@ -6,6 +6,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.rnadigital.monita_android_sdk.monitoringConfig.FilterValidator
 import com.rnadigital.monita_android_sdk.monitoringConfig.FilterValidator.findValueByKey
+import com.rnadigital.monita_android_sdk.monitoringConfig.FilterValidator.getValueFromJson
 import com.rnadigital.monita_android_sdk.monitoringConfig.Vendor
 import com.rnadigital.monita_android_sdk.sendData.ApiService
 import com.rnadigital.monita_android_sdk.utils.JSONUtils.createPayload
@@ -295,7 +296,10 @@ class SendToServer(
 
             val requestBodyMap: Map<String, Any> = getDtData(requestBodyString)
             var dtData = listOf(requestBodyMap)
-            val eventParameterValue =   vendor?.eventParamter?.let { searchKeyInList(dtData, it) }
+//            val eventParameterValue =   vendor?.eventParamter?.let { searchKeyInList(dtData, it) }
+            Logger().log("Intercepted dtData.toString() ${dtData.toString()}")
+            val eventParameterValue =   vendor?.eventParamter?.let { getValueFromJson(requestBodyMap, it) }.toString()
+
             Logger().log("Intercepted vendor?.eventParamter ${vendor?.eventParamter}")
 
             Logger().log("Intercepted eventParameterValue $eventParameterValue")
@@ -329,6 +333,8 @@ class SendToServer(
 
         }
     }
+
+
 
     fun searchKeyInList(dataList: List<Map<String, Any>>, key: String): String {
         for (map in dataList) {

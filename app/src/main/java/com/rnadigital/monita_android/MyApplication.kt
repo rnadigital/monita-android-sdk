@@ -26,7 +26,7 @@ class MyApplication : Application() {
         val policy = ThreadPolicy.Builder().permitAll().build()
         StrictMode.setThreadPolicy(policy)
         MonitaSDK.Builder(this)
-            .enableLogger(false) // Enable logging
+            .enableLogger(true) // Enable logging
             .setToken(token) // Set the token
             .build {
                 // Callback when initialization is complete

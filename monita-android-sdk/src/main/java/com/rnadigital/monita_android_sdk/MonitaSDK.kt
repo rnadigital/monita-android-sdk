@@ -10,6 +10,7 @@ import okhttp3.Request
 import okhttp3.Response
 import okio.IOException
 import java.lang.ref.WeakReference
+import android.provider.Settings
 
 object MonitaSDK {
     private var isInitialized = false
@@ -84,6 +85,21 @@ object MonitaSDK {
 
     fun isSDKInitialized(): Boolean {
         return isInitialized
+    }
+
+
+    // Function to get a unique session ID
+    fun getSessionId(context: Context): String {
+        // Example of generating a unique session ID using Android's Settings.Secure class
+        return Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
+            ?: "default_session_id"
+    }
+
+    // Function to get a unique customer ID
+    fun getCustomerId(): String {
+        // Custom code to generate or fetch a customer ID
+        // For this example, we'll use a hardcoded string or return a generated UUID
+        return "customer_id_12345" // Replace this with your logic to retrieve or generate a customer ID
     }
 
     private fun fetchMonitoringConfig(token: String, callback: (MonitoringConfig) -> Unit) {

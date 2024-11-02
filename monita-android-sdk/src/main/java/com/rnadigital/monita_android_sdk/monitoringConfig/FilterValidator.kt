@@ -1,10 +1,17 @@
 package com.rnadigital.monita_android_sdk.monitoringConfig
 
+import com.google.gson.Gson
+import com.google.gson.JsonElement
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import com.rnadigital.monita_android_sdk.Logger
 
 object FilterValidator {
 
-    fun excludeParameters(dataList: List<Map<String, Any>>, excludeParameters: List<String> = emptyList()): List<Map<String, Any>> {
+    fun excludeParameters(
+        dataList: List<Map<String, Any>>,
+        excludeParameters: List<String> = emptyList()
+    ): List<Map<String, Any>> {
         return dataList.map { data ->
             val filteredData = mutableMapOf<String, Any>()
 
@@ -14,18 +21,26 @@ object FilterValidator {
                         is Map<*, *> -> {
                             // Recursively exclude parameters in nested maps
                             @Suppress("UNCHECKED_CAST")
-                            filteredData[key] = excludeParameters(listOf(value as Map<String, Any>), excludeParameters).first()
+                            filteredData[key] = excludeParameters(
+                                listOf(value as Map<String, Any>),
+                                excludeParameters
+                            ).first()
                         }
+
                         is List<*> -> {
                             // Process lists by filtering each item if it’s a map
                             filteredData[key] = value.map { item ->
                                 if (item is Map<*, *>) {
-                                    excludeParameters(listOf(item as Map<String, Any>), excludeParameters).first()
+                                    excludeParameters(
+                                        listOf(item as Map<String, Any>),
+                                        excludeParameters
+                                    ).first()
                                 } else {
                                     item
                                 }
                             }
                         }
+
                         else -> {
                             // Add non-map, non-list values directly
                             filteredData[key] = value
@@ -39,9 +54,8 @@ object FilterValidator {
     }
 
 
-
     // Recursive function to search for a key within a nested map structure
-     fun findValueByKey(data: Map<String, Any?>, targetKey: String): Any? {
+    fun findValueByKey(data: Map<String, Any?>, targetKey: String): Any? {
         data.forEach { (key, value) ->
             if (key == targetKey) {
                 return value // Return the value if key matches
@@ -100,6 +114,95 @@ object FilterValidator {
         }
         return true // All filters passed
     }
+
+
+    fun convertListToJson(list: Map<String, Any>): String {
+        val gson = Gson()
+        return gson.toJson(list)
+    }
+
+    fun fixInvalidJsonString(input: String): String {
+        return input
+            .replace("=", ":") // Replace '=' with ':'
+            .replace("([a-zA-Z0-9_]+)\\s*:".toRegex(), "\"$1\":") // Add quotes around keys
+            .replace("'".toRegex(), "\"") // Replace single quotes with double quotes if needed
+    }
+
+
+    fun getValueFromJsonPath(list: Map<String, Any>, jsonPath: String): Any? {
+
+        val jsonString = convertListToJson(list).trimIndent()
+        Logger().log("Intercepted jsonString $jsonString ")
+
+
+        val gson = Gson()
+        val jsonElement: JsonElement = gson.fromJson(jsonString, JsonElement::class.java)
+
+        // Split the jsonPath into parts (e.g., "commerce.items[0].itemNumber")
+        val pathParts = jsonPath.split(".")
+        var currentElement: JsonElement? = jsonElement
+
+        for (part in pathParts) {
+            if (currentElement is JsonObject) {
+                // Handle array indexing if present
+                if (part.contains("[")) {
+                    val arrayPart = part.substringBefore("[")
+                    val index = part.substringAfter("[").substringBefore("]").toInt()
+                    currentElement =
+                        currentElement.getAsJsonObject(arrayPart)?.asJsonArray?.get(index)
+                } else {
+                    currentElement = currentElement.getAsJsonObject()?.get(part)
+                }
+            }
+        }
+
+        return currentElement?.let {
+            if (it.isJsonPrimitive) it.asJsonPrimitive.asString else it.toString()
+        }
+    }
+
+
+    fun getValueFromJson(list: Map<String, Any>, jsonPath: String): JsonElement? {
+        // Parse the JSON string into a JsonObject
+        val jsonString = convertListToJson(list).trimIndent()
+        Logger().log("Intercepted jsonString $jsonString ")
+
+        val jsonElement: JsonElement = JsonParser.parseString(jsonString)
+        if (jsonElement !is JsonObject) return null
+
+        // Construct the path segments
+        val pathSegments = constructJsonPath(jsonPath)
+
+        // Traverse the JSON object using the path segments
+        var currentElement: JsonElement = jsonElement
+        for (segment in pathSegments) {
+            currentElement = when (segment) {
+                is String -> (currentElement as? JsonObject)?.get(segment) ?: return null
+                is Int -> (currentElement as? com.google.gson.JsonArray)?.get(segment) ?: return null
+                else -> return null
+            }
+        }
+
+        return currentElement
+    }
+
+    fun constructJsonPath(jsonPath: String): List<Any> {
+        val pathSegments = mutableListOf<Any>()
+        val regex = Regex("([a-zA-Z0-9_]+)|\\[(\\d+)]")
+
+        regex.findAll(jsonPath).forEach { matchResult ->
+            val key = matchResult.groups[1]?.value
+            val index = matchResult.groups[2]?.value
+
+            when {
+                key != null -> pathSegments.add(key)  // Add the key to the path
+                index != null -> pathSegments.add(index.toInt())  // Convert index to integer and add
+            }
+        }
+
+        return pathSegments
+    }
+
 
     private fun evaluateCondition(value: Any?, op: String, values: List<String>): Boolean {
         Logger().log("Intercepted FilterValidator evaluateCondition ")
