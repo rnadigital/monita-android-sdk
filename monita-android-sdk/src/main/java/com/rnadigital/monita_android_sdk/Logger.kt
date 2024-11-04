@@ -11,9 +11,9 @@ class Logger {
         if (MonitaSDK.isLoggerEnabled()) Log.d("Monita SDK Logger", message)
     }
 
-    fun log(name: String, message: String) {
+    fun log(tittle: String, message: String) {
         // Here you can define how to log the message (e.g., using Android Logcat, or saving to a file)
-        if (MonitaSDK.isLoggerEnabled()) Log.d("Monita SDK Logger", "$name - $message")
+        if (MonitaSDK.isLoggerEnabled()) Log.d("Monita SDK Logger", "$tittle - $message")
     }
 
     fun logRequest(request: Request) {
@@ -29,5 +29,9 @@ class Logger {
             log("Response Code: ${response.code}")
             log("Response Body: ${response.body?.string()}")
 
+    }
+
+    fun error(message: String) {
+        if (MonitaSDK.isLoggerEnabled()) Log.e("Monita SDK Logger", message)
     }
 }

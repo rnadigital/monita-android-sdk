@@ -1,16 +1,18 @@
 package com.rnadigital.monita_android_sdk
 
 import android.content.Context
+import android.provider.Settings
 import com.google.gson.Gson
 import com.rnadigital.monita_android_sdk.monitoringConfig.MonitoringConfig
-import okhttp3.Call
-import okhttp3.Callback
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.Response
-import okio.IOException
+import com.rnadigital.monita_android_sdk.worker.ScheduleBatchManager
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import okhttp3.*
+import java.io.IOException
 import java.lang.ref.WeakReference
-import android.provider.Settings
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 object MonitaSDK {
     private var isInitialized = false
@@ -19,113 +21,125 @@ object MonitaSDK {
     private lateinit var monitoringConfig: MonitoringConfig
     private var token: String = ""
     private var contextReference: WeakReference<Context>? = null
+    private var maxBatchSize = 2
 
 
+    // Thread pool for background tasks
+    private val executorService = Executors.newSingleThreadExecutor()
+    private val client: OkHttpClient = OkHttpClient.Builder()
+        .connectTimeout(30, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS)
+        .writeTimeout(30, TimeUnit.SECONDS)
+        .build()
 
-
+    // Builder class for SDK configuration
     class Builder(private val context: Context) {
-
         fun enableLogger(loggerEnabled: Boolean): Builder = apply { enableLogger = loggerEnabled }
         fun setToken(t: String): Builder = apply { token = t }
-
+        fun setBatchSize(maxSize: Int = 2): Builder = apply { maxBatchSize = maxSize }
         fun build(onInitialized: (() -> Unit)? = null) {
             init(context, onInitialized)
         }
     }
 
-    //get CID
-    //get SID
-    // Get CN
-    // Refresh fetchMonitoringConfig
-    // enable Logs
-
-   private fun init(
-        context: Context,
-        onInitialized: (() -> Unit)? = null
-    ) {
+    // Initialization method
+    private fun init(context: Context, onInitialized: (() -> Unit)? = null) {
         if (isInitialized) {
             onInitialized?.invoke() // Already initialized, notify immediately
             return
         }
+        contextReference = WeakReference(context.applicationContext)
+        ScheduleBatchManager.initialize(context)
 
-
-       contextReference = WeakReference(context.applicationContext)
-
-        fetchMonitoringConfig(token) { monitoringConfig ->
-            this.monitoringConfig = monitoringConfig
-            isInitialized = true
-            onInitialized?.invoke()
-            logger.log("Fetching monitoring Config")
+        // Fetch monitoring config on a background thread
+        executorService.execute {
+            try {
+                fetchMonitoringConfig(token) { config ->
+                    monitoringConfig = config
+                    isInitialized = true
+                     logger.log("Monitoring Config fetched successfully")
+                    onInitialized?.invoke()
+                }
+            } catch (e: Exception) {
+                 logger.error("Initialization failed: ${e.message}")
+            }
         }
     }
 
-    fun refreshMonitoringConfig() {
-        fetchMonitoringConfig(token) { monitoringConfig ->
-            this.monitoringConfig = monitoringConfig
-            isInitialized = true
-            logger.log("Refreshing monitoring Config")
+//    // Refresh monitoring configuration
+//    fun refreshMonitoringConfig() {
+//        executorService.execute {
+//            try {
+//                fetchMonitoringConfig(token) { config ->
+//                    monitoringConfig = config
+//                    logger.log("Monitoring Config refreshed successfully")
+//                }
+//            } catch (e: Exception) {
+//               logger.error("Failed to refresh Monitoring Config: ${e.message}")
+//            }
+//        }
+//    }
+
+    // Function to refresh the monitoring config and wait for the call to complete
+    suspend fun refreshMonitoringConfig() = withContext(Dispatchers.IO) {
+        try {
+            // Use a CompletableDeferred to wait for the callback to complete
+            val deferred = CompletableDeferred<Unit>()
+
+            fetchMonitoringConfig(token) { config ->
+                monitoringConfig = config
+                logger.log("Monitoring Config refreshed successfully")
+                deferred.complete(Unit) // Complete the deferred when done
+            }
+
+            deferred.await() // Wait for the deferred to complete
+        } catch (e: Exception) {
+            logger.error("Failed to refresh Monitoring Config: ${e.message}")
         }
     }
 
-    fun isLoggerEnabled(): Boolean {
-        return enableLogger
-    }
+    // Public getters
+    fun isLoggerEnabled(): Boolean = enableLogger
+    fun getMonitaContext(): Context? = contextReference?.get()
+    fun getMonitoringConfig(): MonitoringConfig = monitoringConfig
+    fun getSDKToken(): String = token
+    fun isSDKInitialized(): Boolean = isInitialized
+    fun getMaxBatchSize(): Int = maxBatchSize
 
-    fun getMonitaContext(): Context? {
-        return contextReference?.get() // Returns the application context if available
-    }
-
-    fun getMonitoringConfig(): MonitoringConfig {
-        return monitoringConfig // Returns the application context if available
-    }
-
-    fun getSDKToken(): String {
-        return token // Returns the application context if available
-    }
-
-    fun isSDKInitialized(): Boolean {
-        return isInitialized
-    }
-
-
-    // Function to get a unique session ID
+    // Unique session ID
     fun getSessionId(context: Context): String {
-        // Example of generating a unique session ID using Android's Settings.Secure class
-        return Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
-            ?: "default_session_id"
+        return Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID) ?: "default_session_id"
     }
 
-    // Function to get a unique customer ID
-    fun getCustomerId(): String {
-        // Custom code to generate or fetch a customer ID
-        // For this example, we'll use a hardcoded string or return a generated UUID
-        return "customer_id_12345" // Replace this with your logic to retrieve or generate a customer ID
-    }
+    // Example customer ID
+    fun getCustomerId(): String = "customer_id_12345"
 
+    // Improved fetchMonitoringConfig method with error handling
     private fun fetchMonitoringConfig(token: String, callback: (MonitoringConfig) -> Unit) {
-
         val unixTime = System.currentTimeMillis()
-
-
         val request = Request.Builder()
             .url("https://storage.googleapis.com/cdn-monita-dev/custom-config/$token.json?v=$unixTime")
             .build()
 
-        val client = OkHttpClient.Builder().build()
         client.newCall(request).enqueue(object : Callback {
             override fun onResponse(call: Call, response: Response) {
-                val jsonResponse = response.body?.string()
-                if (jsonResponse != null) {
-                    // Parse the JSON response into MonitoringConfig
-                    val gson = Gson()
-                    val monitoringConfig = gson.fromJson(jsonResponse, MonitoringConfig::class.java)
-                    callback(monitoringConfig)
-                    logger.log("monitoringConfig ${monitoringConfig.toString()}")
+                if (response.isSuccessful) {
+                    val jsonResponse = response.body?.string()
+                    if (jsonResponse != null) {
+                        val gson = Gson()
+                        val config = gson.fromJson(jsonResponse, MonitoringConfig::class.java)
+                        callback(config)
+                         logger.log("Monitoring Config: $config")
+                    } else {
+                         logger.error("Empty response body")
+                    }
+                } else {
+                     logger.error("Error fetching config: ${response.code} ${response.message}")
                 }
             }
 
             override fun onFailure(call: Call, e: IOException) {
-                // Handle failure (retry, fallback, etc.)
+                 logger.error("Network request failed: ${e.message}")
             }
         })
     }

@@ -17,7 +17,7 @@ class SendDataToServer {
         if (MonitaSDK.isSDKInitialized()) {
             SendToServer().createHTTPMonitaData(request)
         } else {
-            Logger().log("Intercepted MonitaSDK is not initialized. Unable to process the request.")
+            Logger().error("Intercepted MonitaSDK is not initialized. Unable to process the request.")
 
         }
     }
@@ -27,7 +27,7 @@ class SendDataToServer {
         if (MonitaSDK.isSDKInitialized()) {
             SendToServer().createFirebaseMonitaData(fa, name , params)
         } else {
-            Logger().log("Intercepted MonitaSDK is not initialized. Unable to process the request.")
+            Logger().error("Intercepted MonitaSDK is not initialized. Unable to process the request.")
 
         }
     }
@@ -36,7 +36,7 @@ class SendDataToServer {
         if (MonitaSDK.isSDKInitialized()) {
             SendToServer().createFacebookMonitaData(name , params)
         } else {
-            Logger().log("Intercepted MonitaSDK is not initialized. Unable to process the request.")
+            Logger().error("Intercepted MonitaSDK is not initialized. Unable to process the request.")
 
         }
     }
@@ -56,7 +56,7 @@ class SendDataToServer {
         if (MonitaSDK.isSDKInitialized()) {
             SendToServer().createAdobeAnalyticsMonitaData(name , params)
         } else {
-            Logger().log("Intercepted MonitaSDK is not initialized. Unable to process the request.")
+            Logger().error("Intercepted MonitaSDK is not initialized. Unable to process the request.")
 
         }
     }
@@ -80,7 +80,7 @@ class SendDataToServer {
                     return@launch
                 } else {
                     // Log the status and increase the delay exponentially
-                    Logger().log("MonitaSDK is not initialized. Retry attempt: $attempt")
+                    Logger().error("MonitaSDK is not initialized. Retry attempt: $attempt")
                     val delayTime = baseDelay * 2.0.pow(attempt).toLong()
                     delay(delayTime)
                     attempt++
@@ -88,7 +88,7 @@ class SendDataToServer {
             }
 
             // Handle the case when max retries are reached
-            Logger().log("Intercepted: MonitaSDK could not be initialized after $maxRetries attempts. Unable to process the request.")
+            Logger().error("Intercepted: MonitaSDK could not be initialized after $maxRetries attempts. Unable to process the request.")
         }
     }
 

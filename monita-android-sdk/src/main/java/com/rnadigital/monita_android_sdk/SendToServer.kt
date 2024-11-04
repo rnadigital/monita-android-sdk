@@ -12,6 +12,7 @@ import com.rnadigital.monita_android_sdk.sendData.ApiService
 import com.rnadigital.monita_android_sdk.utils.JSONUtils.createPayload
 import com.rnadigital.monita_android_sdk.utils.JSONUtils.encodeJsonPayload
 import com.rnadigital.monita_android_sdk.worker.ScheduleBatch
+import com.rnadigital.monita_android_sdk.worker.ScheduleBatchManager
 import okhttp3.Request
 import okio.Buffer
 
@@ -359,14 +360,14 @@ class SendToServer(
         dtData: List<Map<String, Any>>
     ) {
 
-        MonitaSDK.getMonitaContext()?.let {
-            ScheduleBatch(it).scheduleBatchUpload(
+
+            ScheduleBatchManager.scheduleBatch.addRequestToBatch(
                 vendorEvent = vendorEvent,
                 vendorName = vendorName,
                 httpMethod = httpMethod,
                 capturedUrl = capturedUrl,
                 dtData = dtData
             )
-        }
+
     }
 }

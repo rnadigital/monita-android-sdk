@@ -28,6 +28,7 @@ class MyApplication : Application() {
         MonitaSDK.Builder(this)
             .enableLogger(true) // Enable logging
             .setToken(token) // Set the token
+            .setBatchSize(10)
             .build {
                 // Callback when initialization is complete
                 // You can place any setup code here

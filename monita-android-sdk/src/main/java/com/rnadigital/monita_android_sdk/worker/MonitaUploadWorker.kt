@@ -1,45 +1,49 @@
 package com.rnadigital.monita_android_sdk.worker
 
-import com.rnadigital.monita_android_sdk.sendData.ApiService
-
 import android.content.Context
-import android.util.Log
-import androidx.work.Worker
+import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.rnadigital.monita_android_sdk.Logger
 import com.rnadigital.monita_android_sdk.MonitaSDK
+import com.rnadigital.monita_android_sdk.sendData.ApiService
 import com.rnadigital.monita_android_sdk.sendData.RequestPayload
-import okhttp3.OkHttpClient
-import java.io.IOException
+import kotlinx.coroutines.coroutineScope
 
 class MonitaUploadWorker(
     context: Context,
     workerParams: WorkerParameters
-) : Worker(context, workerParams) {
+) : CoroutineWorker(context, workerParams) {
 
     private val apiService = ApiService()
     private val gson = Gson()
 
-    override fun doWork(): Result {
-        // Retrieve JSON string from input data
-        val eventDataJson = inputData.getString("event_data") ?: return Result.failure()
+    override suspend fun doWork(): Result = coroutineScope {
+        // Get the JSON string from the input data
+        val eventDataJson = inputData.getString("event_data") ?: return@coroutineScope Result.failure()
 
-        // Deserialize JSON string to RequestPayload object
-        val requestPayload: RequestPayload = gson.fromJson(eventDataJson, RequestPayload::class.java)
+        // Deserialize the JSON string into a list of RequestPayload objects
+        val listType = object : TypeToken<List<RequestPayload>>() {}.type
+        val requestPayloads: List<RequestPayload> = try {
+            gson.fromJson(eventDataJson, listType)
+        } catch (e: Exception) {
+            Logger().error("Error parsing JSON: ${e.message}")
+            return@coroutineScope Result.failure()
+        }
 
-        MonitaSDK.refreshMonitoringConfig()
+        try {
+            // Refresh the monitoring config before sending data
+            MonitaSDK.refreshMonitoringConfig()
 
-
-        return try {
-            // Send data using ApiService
-            apiService.postData( requestPayload)
-            Logger().log("MonitaUploadWorker", "Successfully posted batch data")
+            // Process the list of RequestPayloads and send them to the server
+            for (payload in requestPayloads) {
+                apiService.postData(payload)
+            }
             Result.success()
-        } catch (e: IOException) {
-            Log.e("MonitaUploadWorker", "Failed to post data", e)
-            Result.retry() // Retry the work in case of failure
+        } catch (e: Exception) {
+            Logger().error("Error sending data: ${e.message}")
+            Result.retry()
         }
     }
 }
