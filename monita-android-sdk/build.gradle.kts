@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
     id("maven-publish")
+    id("kotlin-kapt")
+
 }
 
 android {
@@ -58,6 +60,10 @@ dependencies {
     implementation (libs.gson) // Use the latest version if available
     implementation (libs.androidx.work.runtime.ktx)
     implementation (libs.androidx.room.ktx)
+    // Room dependencies
+    implementation (libs.androidx.room.runtime)
+    kapt ("androidx.room:room-compiler:2.6.1")
+
 
 
 

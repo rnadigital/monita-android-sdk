@@ -5,16 +5,16 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.rnadigital.monita_android_sdk.monitoringConfig.FilterValidator
-import com.rnadigital.monita_android_sdk.monitoringConfig.FilterValidator.findValueByKey
 import com.rnadigital.monita_android_sdk.monitoringConfig.FilterValidator.getValueFromJson
 import com.rnadigital.monita_android_sdk.monitoringConfig.Vendor
 import com.rnadigital.monita_android_sdk.sendData.ApiService
 import com.rnadigital.monita_android_sdk.utils.JSONUtils.createPayload
 import com.rnadigital.monita_android_sdk.utils.JSONUtils.encodeJsonPayload
-import com.rnadigital.monita_android_sdk.worker.ScheduleBatch
 import com.rnadigital.monita_android_sdk.worker.ScheduleBatchManager
 import okhttp3.Request
 import okio.Buffer
+import org.json.JSONArray
+import org.json.JSONObject
 
 
 class SendToServer(
@@ -46,18 +46,61 @@ class SendToServer(
         return stringBuilder.toString().trimEnd(',', ' ')
     }
 
+//    fun createPayloadAsListOfMaps(name: String?, bundle: Bundle): List<Map<String, Any>> {
+//        // Create the payload as a JSONObject
+//        val payload = createPayload(name, bundle)
+//
+//        // Convert the JSONObject into a Map and then into a List<Map<String, Any>>
+//        val dtData = mutableListOf<Map<String, Any>>()
+//        payload.keys().forEach { key ->
+//            val map = mapOf(key to payload.get(key))
+//            dtData.add(map)
+//        }
+//        return dtData
+//    }
+
+
     fun createPayloadAsListOfMaps(name: String?, bundle: Bundle): List<Map<String, Any>> {
         // Create the payload as a JSONObject
         val payload = createPayload(name, bundle)
 
-        // Convert the JSONObject into a Map and then into a List<Map<String, Any>>
-        val dtData = mutableListOf<Map<String, Any>>()
+        // Convert the JSONObject into a single Map and wrap it in a List<Map<String, Any>>
+        val resultMap = mutableMapOf<String, Any>()
+
         payload.keys().forEach { key ->
-            val map = mapOf(key to payload.get(key))
-            dtData.add(map)
+            val value = payload.get(key)
+            // If the value is another JSONObject, convert it to a Map
+            resultMap[key] = if (value is JSONObject) {
+                value.toMap()
+            } else {
+                value
+            }
         }
-        return dtData
+
+        return listOf(resultMap)
     }
+
+    // Extension function to convert JSONObject to Map<String, Any>
+    fun JSONObject.toMap(): Map<String, Any> = keys().asSequence().associateWith { key ->
+        val value = get(key)
+        when (value) {
+            is JSONArray -> value.toList()
+            is JSONObject -> value.toMap()
+            else -> value
+        }
+    }
+
+    // Extension function to convert JSONArray to List<Any>
+    fun JSONArray.toList(): List<Any> = (0 until length()).map { index ->
+        when (val value = get(index)) {
+            is JSONArray -> value.toList()
+            is JSONObject -> value.toMap()
+            else -> value
+        }
+    }
+
+
+
 
     fun bundleToListOfMaps(bundle: Bundle): List<Map<String, Any>> {
         val dtData = mutableListOf<Map<String, Any>>()
@@ -203,6 +246,7 @@ class SendToServer(
             val eventParameterValue =
                 vendor?.eventParamter?.let { findeventParameterValue(dtData, it) }
 
+            Logger().log("created dtData $dtData")
 
 
             val payload = encodeJsonPayload(createPayload(name, params))
@@ -248,9 +292,6 @@ class SendToServer(
             var dtData = createPayloadAsListOfMaps(name, params)
             val eventParameterValue =
                 vendor?.eventParamter?.let { findeventParameterValue(dtData, it) }
-
-
-            val payload = encodeJsonPayload(createPayload(name, params))
             logger.log("vendors.eventParamter: ${vendor?.eventParamter}")
             logger.log("vendors.vendorName: ${vendor?.vendorName}")
             logger.log("request.method: pos")
@@ -261,6 +302,7 @@ class SendToServer(
                 FilterValidator.validateFilters(dtData, it)
             }
 
+            Logger().log("execludeParameters ${vendor?.execludeParameters}")
             dtData = vendor?.execludeParameters?.let { FilterValidator.excludeParameters(dtData, it) }!!
             Logger().log("newDtData $dtData")
 
@@ -291,18 +333,17 @@ class SendToServer(
         if (vendorUrlMatched(url) != null) {
 
 
-            val requestBodyString = request.body?.let { body ->
+            val JSONString = request.body?.let { body ->
                 Buffer().apply { body.writeTo(this) }.readUtf8()
             } ?: ""
 
-            val requestBodyMap: Map<String, Any> = getDtData(requestBodyString)
+            val requestBodyMap: Map<String, Any> = getDtData(JSONString)
             var dtData = listOf(requestBodyMap)
 //            val eventParameterValue =   vendor?.eventParamter?.let { searchKeyInList(dtData, it) }
-            Logger().log("Intercepted dtData.toString() ${dtData.toString()}")
-            val eventParameterValue =   vendor?.eventParamter?.let { getValueFromJson(requestBodyMap, it) }.toString()
+            Logger().log("¸ $JSONString")
+            val eventParameterValue =   vendor?.eventParamter?.let { getValueFromJson(JSONString, it) }.toString()
 
             Logger().log("Intercepted vendor?.eventParamter ${vendor?.eventParamter}")
-
             Logger().log("Intercepted eventParameterValue $eventParameterValue")
 
 
@@ -316,7 +357,8 @@ class SendToServer(
             }
 
             Logger().log("Intercepted vendor.filters $isValid")
-            dtData = vendor?.execludeParameters?.let { FilterValidator.excludeParameters(dtData, it) }!!
+            Logger().log("execludeParameters ${vendor?.execludeParameters}")
+            dtData = vendor?.execludeParameters?.let { FilterValidator.modifyJsonAndReturnList(dtData, it) }!!
             Logger().log("newDtData $dtData")
 
             if (isValid == true) {
@@ -335,21 +377,6 @@ class SendToServer(
         }
     }
 
-
-
-    fun searchKeyInList(dataList: List<Map<String, Any>>, key: String): String {
-        for (map in dataList) {
-
-            val value = findValueByKey(map, key).toString()
-
-            Logger().log("searchKeyInList map $map has key $key")
-                Logger().log("searchKeyInList map[key].toString() ${map[key].toString()}")
-
-                return value // Return the value if key exists
-
-        }
-        return "" // Return an empty string if the key is not found
-    }
 
 
     private fun sendToMonita(

@@ -1,6 +1,7 @@
 package com.rnadigital.monita_android_sdk
 
 import android.content.Context
+import android.content.pm.PackageManager
 import android.provider.Settings
 import com.google.gson.Gson
 import com.rnadigital.monita_android_sdk.monitoringConfig.MonitoringConfig
@@ -14,6 +15,7 @@ import java.lang.ref.WeakReference
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
+
 object MonitaSDK {
     private var isInitialized = false
     private var enableLogger = false
@@ -22,6 +24,13 @@ object MonitaSDK {
     private var token: String = ""
     private var contextReference: WeakReference<Context>? = null
     private var maxBatchSize = 2
+    private var customerId: String = ""
+    private var sessionId: String = ""
+    private var sdkVersion = ""
+    private var appVersion = ""
+    private var appId = ""
+    const val SDK_VERSION = "1.0.0"
+
 
 
     // Thread pool for background tasks
@@ -37,6 +46,8 @@ object MonitaSDK {
         fun enableLogger(loggerEnabled: Boolean): Builder = apply { enableLogger = loggerEnabled }
         fun setToken(t: String): Builder = apply { token = t }
         fun setBatchSize(maxSize: Int = 2): Builder = apply { maxBatchSize = maxSize }
+        fun setCID(cid: String = ""): Builder = apply { customerId = cid }
+        fun setAppVersion(version: String = ""): Builder = apply { appVersion = version }
         fun build(onInitialized: (() -> Unit)? = null) {
             init(context, onInitialized)
         }
@@ -51,34 +62,23 @@ object MonitaSDK {
         contextReference = WeakReference(context.applicationContext)
         ScheduleBatchManager.initialize(context)
 
+        sessionId = Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID) ?: "default_session_id"
+        appId = context.packageName
         // Fetch monitoring config on a background thread
         executorService.execute {
             try {
                 fetchMonitoringConfig(token) { config ->
                     monitoringConfig = config
                     isInitialized = true
-                     logger.log("Monitoring Config fetched successfully")
+                    logger.log("Monitoring Config fetched successfully")
                     onInitialized?.invoke()
                 }
             } catch (e: Exception) {
-                 logger.error("Initialization failed: ${e.message}")
+                logger.error("Initialization failed: ${e.message}")
             }
         }
     }
 
-//    // Refresh monitoring configuration
-//    fun refreshMonitoringConfig() {
-//        executorService.execute {
-//            try {
-//                fetchMonitoringConfig(token) { config ->
-//                    monitoringConfig = config
-//                    logger.log("Monitoring Config refreshed successfully")
-//                }
-//            } catch (e: Exception) {
-//               logger.error("Failed to refresh Monitoring Config: ${e.message}")
-//            }
-//        }
-//    }
 
     // Function to refresh the monitoring config and wait for the call to complete
     suspend fun refreshMonitoringConfig() = withContext(Dispatchers.IO) {
@@ -105,14 +105,27 @@ object MonitaSDK {
     fun getSDKToken(): String = token
     fun isSDKInitialized(): Boolean = isInitialized
     fun getMaxBatchSize(): Int = maxBatchSize
+    fun getSdkVersion(): String = sdkVersion
+    fun getAppVersion(): String = appVersion
+    fun getAppId(): String = appId
 
     // Unique session ID
-    fun getSessionId(context: Context): String {
-        return Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID) ?: "default_session_id"
-    }
+    fun getSessionId(): String = sessionId
+
 
     // Example customer ID
-    fun getCustomerId(): String = "customer_id_12345"
+    fun getCustomerId(): String = customerId
+
+
+  private  fun sdkVersion(context: Context): String {
+        return try {
+            val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+            packageInfo.versionName ?: "Unknown"
+        } catch (e: PackageManager.NameNotFoundException) {
+            "Unknown"
+        }
+    }
+
 
     // Improved fetchMonitoringConfig method with error handling
     private fun fetchMonitoringConfig(token: String, callback: (MonitoringConfig) -> Unit) {
@@ -129,17 +142,17 @@ object MonitaSDK {
                         val gson = Gson()
                         val config = gson.fromJson(jsonResponse, MonitoringConfig::class.java)
                         callback(config)
-                         logger.log("Monitoring Config: $config")
+                        logger.log("Monitoring Config: $config")
                     } else {
-                         logger.error("Empty response body")
+                        logger.error("Empty response body")
                     }
                 } else {
-                     logger.error("Error fetching config: ${response.code} ${response.message}")
+                    logger.error("Error fetching config: ${response.code} ${response.message}")
                 }
             }
 
             override fun onFailure(call: Call, e: IOException) {
-                 logger.error("Network request failed: ${e.message}")
+                logger.error("Network request failed: ${e.message}")
             }
         })
     }

@@ -37,6 +37,7 @@ playServicesAdsLite = "23.4.0"
 playServicesAdsVersion = "22.5.0"
 playServicesMeasurementApi = "22.1.0"
 roomKtx = "2.6.1"
+roomRuntime = "2.6.1"
 sdkBom = "3.5.0"
 sdkCore = "1.11.7"
 workRuntimeKtx = "2.10.0"
@@ -44,6 +45,7 @@ workRuntimeKtx = "2.10.0"
 [libraries]
 analytics = { module = "com.adobe.marketing.mobile:analytics" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomKtx" }
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntimeKtx" }
 identity = { module = "com.adobe.marketing.mobile:identity" }
 marketing = { module = "com.adobe.marketing.mobile:analytics", version.ref = "analytics" }

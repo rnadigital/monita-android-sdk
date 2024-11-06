@@ -5,8 +5,138 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.rnadigital.monita_android_sdk.Logger
+import com.google.gson.reflect.TypeToken
 
 object FilterValidator {
+
+
+
+
+    fun modifyJsonAndReturnList(data: List<Map<String, Any>>, targetKeys: List<String>): List<Map<String, Any>> {
+        val gson = Gson()
+
+        // Convert List<Map<String, Any>> to JSON string
+        val jsonString = gson.toJson(data)
+
+        // Convert JSON string to JsonElement
+        val jsonElement: JsonElement = JsonParser.parseString(jsonString)
+        if (jsonElement !is com.google.gson.JsonArray) return data // Return original data if JSON conversion fails
+
+        // Call removeKeyFromJson to remove each target key from JSON
+        targetKeys.forEach { key ->
+            jsonElement.forEach { element ->
+                removeKeyFromJson(element, key)
+            }
+        }
+
+        // Convert modified JsonElement back to List<Map<String, Any>>
+        val modifiedJsonString = gson.toJson(jsonElement)
+        val type = object : TypeToken<List<Map<String, Any>>>() {}.type
+        return gson.fromJson(modifiedJsonString, type)
+    }
+
+    // Recursive function to remove a target key from a JsonElement
+    fun removeKeyFromJson(jsonElement: JsonElement, targetKey: String) {
+        when (jsonElement) {
+            is JsonObject -> {
+                jsonElement.entrySet().forEach { (key, value) ->
+                    if (key == targetKey) {
+                        jsonElement.remove(key) // Remove the key if it matches the target key
+                    } else {
+                        removeKeyFromJson(value, targetKey) // Recursively check nested elements
+                    }
+                }
+            }
+            is com.google.gson.JsonArray -> {
+                jsonElement.forEach { item ->
+                    removeKeyFromJson(item, targetKey)
+                }
+            }
+        }
+    }
+
+    fun removeKeyByValue(data: MutableMap<String, Any?>, targetKey: String): MutableMap<String, Any?> {
+        // Iterate over the entries of the map
+        val iterator = data.entries.iterator()
+        while (iterator.hasNext()) {
+            val entry = iterator.next()
+            val key = entry.key
+            val value = entry.value
+
+            if (key == targetKey) {
+                iterator.remove() // Remove the entry if the key matches the target key
+            } else if (value is MutableMap<*, *>) {
+                @Suppress("UNCHECKED_CAST")
+                // Recursively remove the target key in nested maps
+                removeKeyByValue(value as MutableMap<String, Any?>, targetKey)
+            } else if (value is MutableList<*>) {
+                // Iterate over the list if it contains nested maps
+                value.forEach { item ->
+                    if (item is MutableMap<*, *>) {
+                        @Suppress("UNCHECKED_CAST")
+                        removeKeyByValue(item as MutableMap<String, Any?>, targetKey)
+                    }
+                }
+            }
+        }
+        return data
+    }
+
+
+
+    fun removeKeyFromListOfMaps(
+        list: List<Map<String, Any>>,
+        keyToRemove: String
+    ): List<Map<String, Any>> {
+        return list.map { map ->
+            map.mapValues { (_, value) ->
+                if (value is Map<*, *>) {
+                    // Recursively remove the key in nested maps
+                    removeKeyFromMap(value as Map<String, Any>, keyToRemove)
+                } else if (value is List<*>) {
+                    // Recursively apply the function for nested lists
+                    removeKeyFromListOfMaps(value.filterIsInstance<Map<String, Any>>(), keyToRemove)
+                } else {
+                    value
+                }
+            }
+        }
+    }
+
+    fun removeKeyFromMap(map: Map<String, Any>, keyToRemove: String): Map<String, Any> {
+        return map.filterKeys { it != keyToRemove }.mapValues { (_, value) ->
+            when (value) {
+                is Map<*, *> -> removeKeyFromMap(value as Map<String, Any>, keyToRemove)
+                is List<*> -> removeKeyFromListOfMaps(value.filterIsInstance<Map<String, Any>>(), keyToRemove)
+                else -> value
+            }
+        }
+    }
+
+
+    fun removeKeyFromJson(jsonString: String, keyToRemove: String): JsonElement {
+        val jsonElement = JsonParser.parseString(jsonString)
+        removeKeyRecursively(jsonElement, keyToRemove)
+        return jsonElement
+    }
+
+    fun removeKeyRecursively(jsonElement: JsonElement, keyToRemove: String) {
+        if (jsonElement.isJsonObject) {
+            val jsonObject = jsonElement.asJsonObject
+            jsonObject.remove(keyToRemove) // Remove the key if present
+
+            // Recursively check each value in the JsonObject
+            jsonObject.entrySet().forEach { (_, value) ->
+                removeKeyRecursively(value, keyToRemove)
+            }
+        } else if (jsonElement.isJsonArray) {
+            // For arrays, recursively check each element
+            jsonElement.asJsonArray.forEach { element ->
+                removeKeyRecursively(element, keyToRemove)
+            }
+        }
+    }
+
 
     fun excludeParameters(
         dataList: List<Map<String, Any>>,
@@ -162,9 +292,9 @@ object FilterValidator {
     }
 
 
-    fun getValueFromJson(list: Map<String, Any>, jsonPath: String): JsonElement? {
+    fun getValueFromJson(json: String, jsonPath: String): JsonElement? {
         // Parse the JSON string into a JsonObject
-        val jsonString = convertListToJson(list).trimIndent()
+        val jsonString = json.trimIndent()
         Logger().log("Intercepted jsonString $jsonString ")
 
         val jsonElement: JsonElement = JsonParser.parseString(jsonString)

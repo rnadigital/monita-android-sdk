@@ -13,7 +13,8 @@ data class RequestPayload(
     val vu: String,            // Captured HTTP call endpoint URL
     val u: String,             // App ID
     val p: String?,            // App area or null
-    val dt: List<Map<String, Any>>,  // Payload content as dynamic JSON array
+    var dt: List<Map<String, Any>>,  // Payload content as dynamic JSON array
+//    val dt: String,  // Payload content as dynamic JSON array
     val s: String = "android-sdk",  // System (android-sdk by default)
     val rl: String,            // SDK release version
     val env: String = "production", // Default environment (production)
@@ -24,5 +25,6 @@ data class RequestPayload(
     val sid: String,           // Session ID (can be SDK generated or provided)
     val cid: String?           // Customer ID (null or SDK generated)
 )
+
 
 

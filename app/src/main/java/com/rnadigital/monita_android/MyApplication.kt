@@ -1,6 +1,8 @@
 package com.rnadigital.monita_android
 
 import android.app.Application
+import android.content.Context
+import android.content.pm.PackageManager
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
 import android.util.Log
@@ -28,7 +30,9 @@ class MyApplication : Application() {
         MonitaSDK.Builder(this)
             .enableLogger(true) // Enable logging
             .setToken(token) // Set the token
-            .setBatchSize(10)
+            .setBatchSize(1)
+            .setCID("123456")
+            .setAppVersion(getAppVersion(applicationContext))
             .build {
                 // Callback when initialization is complete
                 // You can place any setup code here
@@ -51,6 +55,16 @@ class MyApplication : Application() {
             }
         } catch (e: Exception) {
             Log.d("android App","Error registering Adobe Analytics extension: ${e.message}")
+        }
+    }
+
+
+    fun getAppVersion(context: Context): String {
+        return try {
+            val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+            packageInfo.versionName ?: "Unknown"
+        } catch (e: PackageManager.NameNotFoundException) {
+            "Unknown"
         }
     }
 }

@@ -9,7 +9,9 @@ import com.rnadigital.monita_android_sdk.Logger
 import com.rnadigital.monita_android_sdk.MonitaSDK
 import com.rnadigital.monita_android_sdk.sendData.ApiService
 import com.rnadigital.monita_android_sdk.sendData.RequestPayload
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import okio.IOException
 
 class MonitaUploadWorker(
     context: Context,
@@ -19,31 +21,46 @@ class MonitaUploadWorker(
     private val apiService = ApiService()
     private val gson = Gson()
 
-    override suspend fun doWork(): Result = coroutineScope {
+    override suspend fun doWork(): Result {
         // Get the JSON string from the input data
-        val eventDataJson = inputData.getString("event_data") ?: return@coroutineScope Result.failure()
+        val eventDataJson = inputData.getString("event_data") ?: run {
+            Logger().error("Event data is missing.")
+            return Result.failure()
+        }
+        Logger().log("Data successfully sent for eventDataJson ${eventDataJson} .")
+
 
         // Deserialize the JSON string into a list of RequestPayload objects
-        val listType = object : TypeToken<List<RequestPayload>>() {}.type
         val requestPayloads: List<RequestPayload> = try {
+            val listType = object : TypeToken<List<RequestPayload>>() {}.type
             gson.fromJson(eventDataJson, listType)
         } catch (e: Exception) {
             Logger().error("Error parsing JSON: ${e.message}")
-            return@coroutineScope Result.failure()
+            return Result.failure()
         }
 
-        try {
-            // Refresh the monitoring config before sending data
-            MonitaSDK.refreshMonitoringConfig()
-
-            // Process the list of RequestPayloads and send them to the server
-            for (payload in requestPayloads) {
-                apiService.postData(payload)
+        return try {
+            // Refresh the monitoring config using the IO dispatcher
+            withContext(Dispatchers.IO) {
+                MonitaSDK.refreshMonitoringConfig()
             }
+
+            // Process and send the list of RequestPayloads to the server
+            for (payload in requestPayloads) {
+                withContext(Dispatchers.IO) {
+                    apiService.postData(payload)
+                    Logger().log("Data successfully sent for payloads ${payload} .")
+
+                }
+            }
+
             Result.success()
+        } catch (e: IOException) {
+            Logger().error("Network error: ${e.message}. Retrying...")
+            Result.retry() // Retry in case of network-related issues
         } catch (e: Exception) {
-            Logger().error("Error sending data: ${e.message}")
-            Result.retry()
+            Logger().error("Unexpected error: ${e.message}")
+            Result.failure() // Fail if an unexpected error occurs
         }
     }
 }
