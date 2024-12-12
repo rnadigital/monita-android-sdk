@@ -6,6 +6,7 @@ asm = "9.6"
 byteBuddy = "1.15.5"
 byteBuddyAndroid = "1.12.20"
 byteBuddyGradlePlugin = "1.12.20"
+coilCompose = "2.3.0"
 core = "3.2.0"
 facebookAndroidSdk = "17.0.2"
 facebookMarketing = "7.0.1"
@@ -26,6 +27,7 @@ material3 = "1.3.0"
 monitaAndroidSdk = "1.4.0"
 monitaAndroidSdkVersion = "Tag"
 monitaSdk = "1.4.0"
+navigationCompose = "2.8.4"
 okhttp = "5.0.0-alpha.2"
 okhttpVersion = "4.12.0"
 googleGmsGoogleServices = "4.4.2"
@@ -44,9 +46,11 @@ workRuntimeKtx = "2.10.0"
 
 [libraries]
 analytics = { module = "com.adobe.marketing.mobile:analytics" }
+androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomKtx" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntimeKtx" }
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 identity = { module = "com.adobe.marketing.mobile:identity" }
 marketing = { module = "com.adobe.marketing.mobile:analytics", version.ref = "analytics" }
 core = { module = "com.adobe.marketing.mobile:core", version.ref = "core" }

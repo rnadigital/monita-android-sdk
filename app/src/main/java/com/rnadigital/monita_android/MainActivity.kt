@@ -2,13 +2,11 @@ package com.rnadigital.monita_android
 
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Modifier
+import androidx.navigation.compose.rememberNavController
 import com.adobe.marketing.mobile.MobileCore
 import com.facebook.appevents.AppEventsConstants
 import com.facebook.appevents.AppEventsLogger
@@ -18,18 +16,12 @@ import com.google.android.gms.ads.admanager.AdManagerAdRequest
 import com.google.android.gms.ads.admanager.AdManagerInterstitialAd
 import com.google.android.gms.ads.admanager.AdManagerInterstitialAdLoadCallback
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.rnadigital.monita_android.ui.theme.Monita_androidTheme
-import com.rnadigital.monita_android_sdk.Logger
+import com.rnadigital.monita_android.navControler.AppNavGraph
+import com.rnadigital.monita_android.ui.theme.ComposeGridTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import okhttp3.Call
-import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.Response
-import okio.IOException
 
 
 class MainActivity : ComponentActivity() {
@@ -78,13 +70,24 @@ class MainActivity : ComponentActivity() {
 //                }
 //            }
 
-            AnalyticsApp(
-                onFirebaseAnalyticsClick = { logFirebaseEvent(firebaseAnalytics) },
-                onFacebookAnalyticsClick = { logCustomEventFB() },
-                onAdobeAnalyticsClick = { testAdobeAnalytics() },
-                onGoogleAdsClick = { showAd() },
-                onApiCallClick = { performApiCall() }
-            )
+            ComposeGridTheme {
+
+                val navController = rememberNavController()
+                AppNavGraph(navController = navController, this)
+                // Product Grid Screen
+//                ProductGridScreen { product ->
+//                    Toast.makeText(this, "Clicked: ${product.name}", Toast.LENGTH_SHORT).show()
+//                }
+                
+            }
+
+//            AnalyticsApp(
+//                onFirebaseAnalyticsClick = { logFirebaseEvent(firebaseAnalytics) },
+//                onFacebookAnalyticsClick = { logCustomEventFB() },
+//                onAdobeAnalyticsClick = { testAdobeAnalytics() },
+//                onGoogleAdsClick = { showAd() },
+//                onApiCallClick = { performApiCall() }
+//            )
         }
     }
 
@@ -114,6 +117,32 @@ class MainActivity : ComponentActivity() {
     /**
      * Logs an event to both Firebase and Facebook Analytics.
      */
+
+
+    // Firebase Logging
+    fun logFirebaseAddToCart(productId: String, productName: String, productPrice: String) {
+        val bundle = Bundle().apply {
+            putString(FirebaseAnalytics.Param.ITEM_ID, productId)
+            putString(FirebaseAnalytics.Param.ITEM_NAME, productName)
+            putString(FirebaseAnalytics.Param.PRICE, productPrice)
+        }
+        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.ADD_TO_CART, bundle)
+        Toast.makeText(this, "Firebase AddToCart logged", Toast.LENGTH_SHORT).show()
+    }
+
+    // Facebook Logging
+    fun logFacebookAddToCart(productId: String, productName: String, productPrice: String) {
+        val params = Bundle().apply {
+            putString("item_id", productId)
+            putString("item_name", productName)
+            putString("price", productPrice)
+        }
+        AppEventsLogger.newLogger(this).logEvent("AddToCart", params)
+        Toast.makeText(this, "Facebook AddToCart logged", Toast.LENGTH_SHORT).show()
+    }
+
+
+
     private fun logFirebaseEvent(fa: FirebaseAnalytics) {
 
 
@@ -158,9 +187,33 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun showAd() {
+    fun showAd() {
         interstitialAd?.show(this)
     }
+
+    fun trackAddToCartEvent(productId: String, productName: String, productPrice: String, quantity: Int) {
+        // Context data for the "Add to Cart" event
+        val contextData = mapOf(
+            "pageName" to "ProductDetails",
+            "action" to "AddToCart",
+            "productId" to productId,
+            "productName" to productName,
+            "productPrice" to productPrice.toString(),
+            "quantity" to quantity.toString()
+        )
+
+        Log.d("AdobeAnalytics", "Preparing to track action: AddToCart")
+        Log.d("AdobeAnalytics", "Context data: $contextData")
+
+        // Call Adobe Analytics `trackAction` for the "Add to Cart" event
+        try {
+            MobileCore.trackAction("AddToCart", contextData)
+            Log.d("AdobeAnalytics", "Successfully tracked action: AddToCart")
+        } catch (e: Exception) {
+            Log.e("AdobeAnalytics", "Failed to track action: AddToCart", e)
+        }
+    }
+
 
     fun testAdobeAnalytics() {
         val contextData = mapOf(

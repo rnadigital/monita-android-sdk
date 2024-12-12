@@ -81,6 +81,8 @@ dependencies {
     implementation (libs.material3)
     implementation (libs.byte.buddy.android)
     implementation (libs.play.services.ads)
+    implementation (libs.androidx.navigation.compose)
+
 
     byteBuddy (project(":monita-adapter-library"))
     implementation(project(":monita-adapter-library"))
@@ -88,6 +90,8 @@ dependencies {
     implementation(libs.sdk.bom)
     implementation(libs.mobile.core)
     implementation(libs.analytics)
+    implementation (libs.coil.compose)
+
 //    implementation (libs.monita.android.sdk)
 
 

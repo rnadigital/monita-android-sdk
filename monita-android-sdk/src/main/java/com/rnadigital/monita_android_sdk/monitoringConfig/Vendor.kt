@@ -5,5 +5,7 @@ data class Vendor(
     val execludeParameters: List<String>,
     val filters: List<Filter>,
     val urlPatternMatches: List<String>,
-    val vendorName: String
+    val vendorName: String,
+    val filtersJoinOperator: String?
+
 )

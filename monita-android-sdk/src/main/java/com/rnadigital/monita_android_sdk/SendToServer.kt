@@ -7,6 +7,7 @@ import com.google.gson.reflect.TypeToken
 import com.rnadigital.monita_android_sdk.monitoringConfig.FilterValidator
 import com.rnadigital.monita_android_sdk.monitoringConfig.FilterValidator.getValueFromJson
 import com.rnadigital.monita_android_sdk.monitoringConfig.Vendor
+import com.rnadigital.monita_android_sdk.monitoringConfig.checkPassOnFilters
 import com.rnadigital.monita_android_sdk.sendData.ApiService
 import com.rnadigital.monita_android_sdk.utils.JSONUtils.createPayload
 import com.rnadigital.monita_android_sdk.utils.JSONUtils.encodeJsonPayload
@@ -157,11 +158,14 @@ class SendToServer(
             logger.log("request.url: $url")
             val isValid = vendor?.filters?.let {
                 Logger().log("Intercepted vendor.filters $it")
-                FilterValidator.validateFilters(dtData, it)
+               val filtersJoinOperator = vendor.filtersJoinOperator?: "AND"
+                checkPassOnFilters(dtData, it, filtersJoinOperator)
             }
 
 
-           dtData = vendor?.execludeParameters?.let { FilterValidator.excludeParameters(dtData, it) }!!
+            Logger().log("Intercepted vendor.filters value $isValid")
+
+            dtData = vendor?.execludeParameters?.let { FilterValidator.excludeParameters(dtData, it) }!!
            Logger().log("newDtData $dtData")
 
             if (isValid == true){
@@ -207,8 +211,12 @@ class SendToServer(
 
             val isValid = vendor?.filters?.let {
                 Logger().log("Intercepted vendor.filters $it")
-                FilterValidator.validateFilters(dtData, it)
+                val filtersJoinOperator = vendor.filtersJoinOperator?: "AND"
+                checkPassOnFilters(dtData, it, filtersJoinOperator)
             }
+
+            Logger().log("Intercepted vendor.filters value $isValid")
+
 
             dtData = vendor?.execludeParameters?.let { FilterValidator.excludeParameters(dtData, it) }!!
             Logger().log("newDtData $dtData")
@@ -256,8 +264,12 @@ class SendToServer(
             logger.log("request.url: $url")
             val isValid = vendor?.filters?.let {
                 Logger().log("Intercepted vendor.filters $it")
-                FilterValidator.validateFilters(dtData, it)
+                val filtersJoinOperator = vendor.filtersJoinOperator?: "AND"
+                checkPassOnFilters(dtData, it, filtersJoinOperator)
             }
+
+            Logger().log("Intercepted vendor.filters value $isValid")
+
 
             dtData = vendor?.execludeParameters?.let { FilterValidator.excludeParameters(dtData, it) }!!
             Logger().log("newDtData $dtData")
@@ -299,8 +311,12 @@ class SendToServer(
 
             val isValid = vendor?.filters?.let {
                 Logger().log("Intercepted vendor.filters $it")
-                FilterValidator.validateFilters(dtData, it)
+                val filtersJoinOperator = vendor.filtersJoinOperator?: "AND"
+                checkPassOnFilters(dtData, it, filtersJoinOperator)
             }
+
+            Logger().log("Intercepted vendor.filters value $isValid")
+
 
             Logger().log("execludeParameters ${vendor?.execludeParameters}")
             dtData = vendor?.execludeParameters?.let { FilterValidator.excludeParameters(dtData, it) }!!
@@ -353,10 +369,11 @@ class SendToServer(
             logger.log("request.url: ${request.url}")
             val isValid = vendor?.filters?.let {
                 Logger().log("Intercepted vendor.filters $it")
-                FilterValidator.validateFilters(dtData, it)
+                val filtersJoinOperator = vendor.filtersJoinOperator?: "AND"
+                checkPassOnFilters(dtData, it, filtersJoinOperator)
             }
 
-            Logger().log("Intercepted vendor.filters $isValid")
+            Logger().log("Intercepted vendor.filters value $isValid")
             Logger().log("execludeParameters ${vendor?.execludeParameters}")
             dtData = vendor?.execludeParameters?.let { FilterValidator.modifyJsonAndReturnList(dtData, it) }!!
             Logger().log("newDtData $dtData")

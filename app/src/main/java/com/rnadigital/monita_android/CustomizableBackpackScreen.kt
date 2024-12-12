@@ -1,11 +1,7 @@
 package com.rnadigital.monita_android
 
-import android.content.Context
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -31,21 +27,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.firebase.analytics.FirebaseAnalytics
-import okhttp3.Call
-import okhttp3.Callback
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
-import okhttp3.Response
-import okio.IOException
 
 import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.launch
 
-@Preview
 @Composable
-fun CustomizableBackpackScreen() {
+fun CustomizableBackpackScreen(productId: String, productName: String, productPrice: String) {
     val context = LocalContext.current
     val firebaseAnalytics = FirebaseAnalytics.getInstance(context)
     val coroutineScope = rememberCoroutineScope()
