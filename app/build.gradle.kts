@@ -64,7 +64,6 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation(project(":monita-android-sdk"))
 
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.crashlytics)
@@ -83,7 +82,7 @@ dependencies {
     implementation (libs.play.services.ads)
     implementation (libs.androidx.navigation.compose)
 
-
+    implementation(project(":monita-android-sdk"))
     byteBuddy (project(":monita-adapter-library"))
     implementation(project(":monita-adapter-library"))
     implementation (libs.facebook.marketing)

@@ -33,33 +33,10 @@ class ScheduleBatch(private val context: Context) {
         capturedUrl: String,
         appId: String = MonitaSDK.getAppId(),
         sessionId: String = MonitaSDK.getSessionId(),
-        consentString: String = "GRANTED",
+        consentString: String = MonitaSDK.getConsentString(),
         hostAppVersion: String = "com.rnadigital.monita_android",
         dtData: List<Map<String, Any>>
     ) {
-//        // Create the request payload
-//        val requestPayload = RequestPayload(
-//            t = MonitaSDK.getSDKToken(),
-//            dm = "app",
-//            mv = sdkVersion,
-//            sv = appVersion,
-//            tm = System.currentTimeMillis().toDouble() / 1000.0,
-//            e = vendorEvent,
-//            vn = vendorName,
-//            st = "",
-//            m = httpMethod,
-//            vu = capturedUrl,
-//            u = appId,
-//            p = "",
-//            dt = dtData,
-//            rl = sdkVersion,
-//            `do` = hostAppVersion,
-//            cn = consentString,
-//            sid = sessionId,
-//            cid = MonitaSDK.getCustomerId()
-//        )
-
-
 
         // Convert dtData to JSON string
         val dtDataJson = gson.toJson(dtData)

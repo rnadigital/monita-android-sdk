@@ -163,7 +163,7 @@ class SendToServer(
             }
 
 
-            Logger().log("Intercepted vendor.filters value $isValid")
+            Logger().log("Intercepted vendor.filters AdobeAnalytics value $isValid")
 
             dtData = vendor?.execludeParameters?.let { FilterValidator.excludeParameters(dtData, it) }!!
            Logger().log("newDtData $dtData")
@@ -215,7 +215,7 @@ class SendToServer(
                 checkPassOnFilters(dtData, it, filtersJoinOperator)
             }
 
-            Logger().log("Intercepted vendor.filters value $isValid")
+            Logger().log("Intercepted vendor.filters GoogleAds value $isValid")
 
 
             dtData = vendor?.execludeParameters?.let { FilterValidator.excludeParameters(dtData, it) }!!
@@ -268,7 +268,7 @@ class SendToServer(
                 checkPassOnFilters(dtData, it, filtersJoinOperator)
             }
 
-            Logger().log("Intercepted vendor.filters value $isValid")
+            Logger().log("Intercepted vendor.filters Facebook value $isValid")
 
 
             dtData = vendor?.execludeParameters?.let { FilterValidator.excludeParameters(dtData, it) }!!
@@ -315,7 +315,7 @@ class SendToServer(
                 checkPassOnFilters(dtData, it, filtersJoinOperator)
             }
 
-            Logger().log("Intercepted vendor.filters value $isValid")
+            Logger().log("Intercepted vendor.filters Firebase value $isValid")
 
 
             Logger().log("execludeParameters ${vendor?.execludeParameters}")
@@ -323,6 +323,7 @@ class SendToServer(
             Logger().log("newDtData $dtData")
 
             if (isValid == true) {
+                logger.log("vendors.eventParamter: ${eventParameterValue}")
 
                 sendToMonita(
                     vendorEvent = eventParameterValue ?: "",
@@ -373,7 +374,7 @@ class SendToServer(
                 checkPassOnFilters(dtData, it, filtersJoinOperator)
             }
 
-            Logger().log("Intercepted vendor.filters value $isValid")
+            Logger().log("Intercepted vendor.filters value HTTP $isValid")
             Logger().log("execludeParameters ${vendor?.execludeParameters}")
             dtData = vendor?.execludeParameters?.let { FilterValidator.modifyJsonAndReturnList(dtData, it) }!!
             Logger().log("newDtData $dtData")
