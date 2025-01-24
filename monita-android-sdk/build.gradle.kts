@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         minSdk = 24
-
+        version = "1.0.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
@@ -44,6 +44,17 @@ publishing {
         }
     }
 }
+
+//publishing {
+//    publications {
+//        create<MavenPublication>("release") {
+//            from(components["release"])
+//            groupId = "com.github.yourusername"
+//            artifactId = "monita-android-sdk"
+//            version = "1.0.0"
+//        }
+//    }
+//}
 
 
 dependencies {

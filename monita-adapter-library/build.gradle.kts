@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
+    id("maven-publish")
 }
 
 android {
@@ -9,7 +10,7 @@ android {
 
     defaultConfig {
         minSdk = 24
-
+        version = "1.0.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
@@ -31,6 +32,29 @@ android {
         jvmTarget = "11"
     }
 }
+
+
+publishing {
+    publications {
+        register<MavenPublication>("release") {
+            afterEvaluate {
+                from(components["release"])
+            }
+        }
+    }
+}
+
+
+//publishing {
+//    publications {
+//        create<MavenPublication>("release") {
+//            from(components["release"])
+//            groupId = "com.github.yourusername"
+//            artifactId = "monita-adapter-library"
+//            version = "1.0.0"
+//        }
+//    }
+//}
 
 dependencies {
 

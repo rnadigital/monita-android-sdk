@@ -10,6 +10,20 @@ plugins {
 
 }
 
+//
+//plugins {
+//    kotlin("android") version "1.8.20" apply false
+//    id("com.android.application") apply false
+//}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+
 //buildscript {
 //    repositories {
 //        google()
