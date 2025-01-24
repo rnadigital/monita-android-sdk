@@ -52,7 +52,7 @@ publishing {
                 from(components.findByName("release") ?: throw GradleException("Release component not found"))
                 groupId = "com.github.rnadigital"
                 artifactId = "monita-android-sdk"
-                version = "1.6.0"
+                version = "1.8.0"
             }
         }
     }
