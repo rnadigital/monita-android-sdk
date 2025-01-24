@@ -16,17 +16,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Monita_android"
         tools:targetApi="31">
-<!--        <activity-->
-<!--            android:name=".LogActivity"-->
-<!--            android:exported="false"-->
-<!--            android:label="@string/title_activity_log"-->
-<!--            android:theme="@style/Theme.Monita_android" />-->
 
+        <!-- Replace conflicting resources -->
         <property
             android:name="android.adservices.AD_SERVICES_CONFIG"
             android:resource="@xml/gma_ad_services_config"
             tools:replace="android:resource" />
 
+        <!-- Main Activity -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -34,17 +31,16 @@
             android:theme="@style/Theme.Monita_android">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-
-        <!--            android:value="ca-app-pub-3940256099942544/1033173712"-->
-
+        <!-- Google Ads Meta-Data -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-9837737016103788~4804241368" />
+
+        <!-- Facebook SDK Meta-Data -->
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />

@@ -2,7 +2,6 @@ package com.rnadigital.monita_android_sdk
 
 import android.content.Context
 import android.content.pm.PackageManager
-import android.provider.Settings
 import com.google.gson.Gson
 import com.rnadigital.monita_android_sdk.monitoringConfig.MonitoringConfig
 import com.rnadigital.monita_android_sdk.worker.ScheduleBatchManager
@@ -29,6 +28,7 @@ object MonitaSDK {
     private var sdkVersion = ""
     private var appVersion = ""
     private var appId = ""
+    private var consentString = ""
     const val SDK_VERSION = "1.0.0"
 
 
@@ -46,7 +46,9 @@ object MonitaSDK {
         fun enableLogger(loggerEnabled: Boolean): Builder = apply { enableLogger = loggerEnabled }
         fun setToken(t: String): Builder = apply { token = t }
         fun setBatchSize(maxSize: Int = 2): Builder = apply { maxBatchSize = maxSize }
-        fun setCID(cid: String = ""): Builder = apply { customerId = cid }
+        fun setCustomerId(cid: String = ""): Builder = apply { customerId = cid }
+        fun setSessionId(sid: String = ""): Builder = apply { sessionId = sid }
+        fun setConsentString(cn: String = ""): Builder = apply { consentString = cn }
         fun setAppVersion(version: String = ""): Builder = apply { appVersion = version }
         fun build(onInitialized: (() -> Unit)? = null) {
             init(context, onInitialized)
@@ -62,7 +64,7 @@ object MonitaSDK {
         contextReference = WeakReference(context.applicationContext)
         ScheduleBatchManager.initialize(context)
 
-        sessionId = Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID) ?: "default_session_id"
+//        sessionId = Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID) ?: "default_session_id"
         appId = context.packageName
         // Fetch monitoring config on a background thread
         executorService.execute {
@@ -111,6 +113,7 @@ object MonitaSDK {
 
     // Unique session ID
     fun getSessionId(): String = sessionId
+    fun getConsentString(): String = consentString
 
 
     // Example customer ID

@@ -8,11 +8,9 @@ import android.os.StrictMode.ThreadPolicy
 import android.util.Log
 import com.adobe.marketing.mobile.Analytics
 import com.adobe.marketing.mobile.Extension
-import com.adobe.marketing.mobile.LoggingMode
 import com.adobe.marketing.mobile.MobileCore
 import com.facebook.FacebookSdk
 import com.facebook.appevents.AppEventsLogger
-import com.rnadigital.monita_android_sdk.Logger
 import com.rnadigital.monita_android_sdk.MonitaSDK
 
 
@@ -30,8 +28,10 @@ class MyApplication : Application() {
         MonitaSDK.Builder(this)
             .enableLogger(true) // Enable logging
             .setToken(token) // Set the token
-            .setBatchSize(1)
-            .setCID("123456")
+            .setBatchSize(10)
+            .setCustomerId("123456")
+            .setConsentString("Granted")
+            .setSessionId("123456")
             .setAppVersion(getAppVersion(applicationContext))
             .build {
                 // Callback when initialization is complete

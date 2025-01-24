@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.example.monita_adapter_library"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 24
@@ -58,6 +58,7 @@ publishing {
 
 dependencies {
 
+    implementation(libs.kotlin.stdlib)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
