@@ -35,26 +35,29 @@ android {
     }
 }
 
+//publishing {
+//    publications {
+//        register<MavenPublication>("release") {
+//            afterEvaluate {
+//                from(components["release"])
+//            }
+//        }
+//    }
+//}
+
 publishing {
     publications {
         register<MavenPublication>("release") {
             afterEvaluate {
-                from(components["release"])
+                from(components.findByName("release") ?: throw GradleException("Release component not found"))
+                groupId = "com.github.rnadigital"
+                artifactId = "monita-android-sdk"
+                version = "1.6.0"
             }
         }
     }
 }
 
-//publishing {
-//    publications {
-//        create<MavenPublication>("release") {
-//            from(components["release"])
-//            groupId = "com.github.yourusername"
-//            artifactId = "monita-android-sdk"
-//            version = "1.0.0"
-//        }
-//    }
-//}
 
 
 dependencies {
