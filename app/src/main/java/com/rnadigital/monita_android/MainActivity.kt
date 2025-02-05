@@ -26,7 +26,6 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 
 class MainActivity : ComponentActivity() {
 
-    private val token = "fe041147-0600-48ad-a04e-d3265becc4eb"
     private val JSON = "application/json; charset=utf-8".toMediaTypeOrNull()
     private var interstitialAd: AdManagerInterstitialAd? = null
 
