@@ -8,27 +8,27 @@ To integrate Monita SDK into your Android project, follow the steps below.
 
 ### Step 1: Add the JitPack Repository
 
-Add the following lines to your root `build.gradle.kts` or `build.gradle` at the end of repositories:
+Add the following lines to your root `settings.gradle.kts`:
 
 ```gradle
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         mavenCentral()
-        maven { url 'https://jitpack.io' }
+        maven { url = uri("https://jitpack.io")  }
     }
 }
 ```
 
 ### Step 2: Add the Dependencies
 
-Include the Monita SDK and the Monita Adapter Library in your module-level `build.gradle.kts` or `build.gradle` file:
+Include the Monita SDK and the Monita Adapter Library in your **module-level** `build.gradle.kts` or `build.gradle` file:
 
 ```gradle
 dependencies {
-    implementation 'com.github.rnadigital.monita-android-sdk:monita-android-sdk:v1.10.0'
-    implementation 'com.github.rnadigital.monita-android-sdk:monita-adapter-library:v1.10.0'
-    byteBuddy 'com.github.rnadigital.monita-android-sdk:monita-adapter-library:v1.10.0'
+    implementation ("com.github.rnadigital.monita-android-sdk:monita-android-sdk:v1.10.0")
+    implementation ("com.github.rnadigital.monita-android-sdk:monita-adapter-library:v1.10.0")
+    byteBuddy ("com.github.rnadigital.monita-android-sdk:monita-adapter-library:v1.10.0")
 }
 ```
 
