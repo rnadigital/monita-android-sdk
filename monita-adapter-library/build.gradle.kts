@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         minSdk = 24
-        version = "1.10.0"
+        version = "1.11.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
@@ -52,7 +52,7 @@ publishing {
                 from(components.findByName("release") ?: throw GradleException("Release component not found"))
                 groupId = "com.github.rnadigital"
                 artifactId = "monita-adapter-library"
-                version = "1.10.0"
+                version = "1.11.0"
             }
         }
     }
