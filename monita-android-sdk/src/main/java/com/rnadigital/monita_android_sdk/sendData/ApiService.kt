@@ -26,8 +26,8 @@ class ApiService {
     fun postData(
         requestPayload: RequestPayload    // Dynamic payload content
     ) {
-        val url = "https://dev-stream.getmonita.io/api/v1/"
-
+//        val url = "https://dev-stream.getmonita.io/api/v1/"
+        val url = "https://dev-stream.raptor.digital/api/v1/"
         // Convert the payload to JSON string using Gson
         val gson = Gson()
         val jsonPayload = gson.toJson(requestPayload)
